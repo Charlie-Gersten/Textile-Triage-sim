@@ -24,11 +24,10 @@
     @media (max-width: 860px){ .row{ grid-template-columns:1fr; } }
 
     label{ font-size: 13px; color: var(--muted); display:block; margin-bottom: 6px; }
-    input, select, button { font: inherit; }
-    input[type="number"], select{
+    select, button { font: inherit; }
+    select{
       width:100%; padding: 10px 12px; border-radius: 12px; border: 1px solid #ccc; background:#fff;
     }
-
     button{
       padding: 10px 12px; border-radius: 12px; border: 1px solid #bbb; background:#fff; cursor:pointer;
     }
@@ -50,13 +49,43 @@
       border-radius: 16px;
       padding: 14px;
     }
-    .definitions .box{
+    .defRow{
+      display:grid;
+      grid-template-columns: 1fr 260px;
+      gap: 14px;
+      align-items: start;
+      margin-top: 10px;
+    }
+    @media (max-width: 860px){
+      .defRow{ grid-template-columns: 1fr; }
+    }
+    .defCard{
       border: 1px solid var(--border);
       background:#fafafa;
       border-radius: 14px;
       padding: 12px;
-      margin-top: 10px;
     }
+    .defArt{
+      border: 1px solid var(--border);
+      background:#fff;
+      border-radius: 14px;
+      padding: 10px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .defArt svg{ width: 100%; height: auto; max-width: 240px; }
+
+    .checkline{
+      display:flex; gap:10px; align-items:flex-start;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background:#fff;
+    }
+    .checkline input{ margin-top: 4px; }
+    .checkline .txt{ color: var(--muted); font-size: 13px; line-height: 1.35; }
 
     .q{ background:#fff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
     .qTitle{ font-weight: 650; margin-bottom: 10px; }
@@ -137,16 +166,24 @@
     .ok{ font-weight: 800; color: #0a7a2f; }
     .bad{ font-weight: 800; color: #b00020; }
 
-    .checkline{
-      display:flex; gap:10px; align-items:flex-start;
-      margin-top: 12px;
-      padding: 10px 12px;
+    .currentItemBox{
       border: 1px solid var(--border);
-      border-radius: 12px;
       background:#fff;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 10px 0;
     }
-    .checkline input{ margin-top: 4px; }
-    .checkline .txt{ color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .currentItemBig{
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin: 0;
+    }
+    .currentItemSub{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -164,51 +201,115 @@
       </div>
 
       <h1>Guided Sorting (software simulation)</h1>
-      <p>Participants hold the physical garment. Timing begins after item number entry and clicking <b>Start Item</b>.</p>
+      <p>Items are presented in a fixed order. You select the set at the start, and the item number advances automatically.</p>
 
       <!-- SETUP -->
       <div id="setupPanel" class="panel">
         <h2>Participant briefing</h2>
 
         <div class="definitions">
-          <p style="margin-top:0;">
-            Please read the definitions below before starting. In this study, an item is sent to <b>Sorting</b> if it has
-            <b>any contamination</b> or <b>any disruptors</b>. If it has neither, it goes to <b>No Sorting</b>.
-          </p>
+    <p style="margin-top:0;">
+        Please read this first. An item goes to <b>Sorting</b> if it has <b>any contamination</b> OR <b>any disruptors</b>.
+        If it has neither, it goes to <b>No Sorting</b>.
+    </p>
 
-          <div class="box">
-            <h3>Disruptors (examples)</h3>
-            <p style="margin-top:0;">
-              Any item with <b>buttons</b>, <b>zips</b>, <b>trims</b>, or other <b>non-textile materials</b>.
-            </p>
-            <ul>
-              <li>Metal/plastic hardware: zips, studs, rivets, snaps, eyelets</li>
-              <li>Non-textile inserts/attachments: hard labels, plastic parts, electronics (if present)</li>
-              <li>Complex assemblies: heavy embellishment, multiple attached materials</li>
-            </ul>
-          </div>
-
-          <div class="box">
-            <h3>Contamination (examples)</h3>
-            <p style="margin-top:0;">
-              Items showing <b>moisture</b>, <b>oils</b>, or <b>large stains</b>. No hazardous/toxic substances are used in this trial.
-            </p>
-            <ul>
-              <li>Wet/damp fabric or visible moisture</li>
-              <li>Oil/grease marks</li>
-              <li>Large food/soil stains</li>
-            </ul>
-          </div>
-
-          <div class="checkline">
-            <input id="confirmRead" type="checkbox" />
-            <div class="txt">
-              <b>I have read and understood the definitions above.</b><br/>
-              (You must tick this to begin.)
-            </div>
-          </div>
+    <!-- Disruptors row -->
+    <div class="defRow">
+        <div class="defCard">
+        <h3>Disruptors</h3>
+        <p style="margin-top:0;">Any item with <b>buttons</b>, <b>zips</b>, <b>trims</b>, or <b>non-textile attachments</b>.</p>
+        <ul>
+            <li>Buttons, zips</li>
+            <li>Studs, rivets, snaps, eyelets</li>
+            <li>Sequins / embellishment</li>
+            <li>Non-textile attachments (plastic/metal parts)</li>
+        </ul>
         </div>
 
+        <div class="defArt" aria-label="Cartoon examples of disruptors">
+        <div style="
+            display:grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 220px;
+        ">
+            <!-- BUTTON -->
+            <div style="text-align:center;">
+            <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                <circle cx="60" cy="60" r="30" fill="#ffe8b8" stroke="#b0892f" stroke-width="4"/>
+                <circle cx="52" cy="52" r="4" fill="#b0892f"/>
+                <circle cx="68" cy="52" r="4" fill="#b0892f"/>
+                <circle cx="52" cy="68" r="4" fill="#b0892f"/>
+                <circle cx="68" cy="68" r="4" fill="#b0892f"/>
+            </svg>
+            <div style="font-size:11px; color:#555; margin-top:2px;">Button</div>
+            </div>
+
+            <!-- ZIP -->
+            <div style="text-align:center;">
+            <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                <rect x="58" y="20" width="4" height="80" rx="2" fill="#2f2f2f" opacity="0.75"/>
+                <rect x="46" y="44" width="28" height="20" rx="6" fill="#ffd7a8" stroke="#b07b3a" stroke-width="3"/>
+                <rect x="54" y="48" width="12" height="8" rx="3" fill="#ffffff" opacity="0.7"/>
+            </svg>
+            <div style="font-size:11px; color:#555; margin-top:2px;">Zip</div>
+            </div>
+
+            <!-- EYELET -->
+            <div style="text-align:center;">
+            <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                <circle cx="60" cy="60" r="30" fill="#d7e7ff" stroke="#5a78b8" stroke-width="4"/>
+                <circle cx="60" cy="60" r="13" fill="#ffffff" stroke="#5a78b8" stroke-width="4"/>
+            </svg>
+            <div style="font-size:11px; color:#555; margin-top:2px;">Eyelet</div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Contamination row -->
+    <div class="defRow">
+        <div class="defCard">
+        <h3>Contamination</h3>
+        <p style="margin-top:0;">Items with <b>moisture</b>, <b>oil</b>, or a <b>large stain</b>. (No harmful substances used.)</p>
+        <ul>
+            <li>Wet/damp fabric</li>
+            <li>Oil / grease marks</li>
+            <li>Large food/soil stain</li>
+        </ul>
+        </div>
+
+        <div class="defArt" aria-label="Cartoon examples of contamination">
+        <svg viewBox="0 0 220 220" role="img" aria-label="Trousers with water droplets, oil droplet and stain">
+            <rect x="0" y="0" width="220" height="220" rx="18" fill="#ffffff"/>
+            <path d="M72 40 H148 L158 190 H126 L116 112 L104 112 L94 190 H62 Z"
+                fill="#e7e7ef" stroke="#6b6b7a" stroke-width="3"/>
+            <path d="M124 130 C148 120 158 142 142 158 C156 164 142 182 124 176 C118 190 96 178 104 162 C88 156 92 134 110 140 C112 128 120 124 124 130 Z"
+                fill="#c78d5f" opacity="0.85" stroke="#8a5a35" stroke-width="2"/>
+            <path d="M52 82 C52 72 60 62 60 54 C60 62 68 72 68 82 C68 92 61 100 60 100 C59 100 52 92 52 82 Z"
+                fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
+            <path d="M36 116 C36 108 43 100 43 92 C43 100 50 108 50 116 C50 124 44 132 43 132 C42 132 36 124 36 116 Z"
+                fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
+            <path d="M178 108 C178 98 188 86 188 78 C188 86 198 98 198 108 C198 120 190 130 188 130 C186 130 178 120 178 108 Z"
+                fill="#ffd38a" stroke="#b07b3a" stroke-width="2"/>
+            <text x="16" y="206" font-size="12" fill="#666">water • oil • stain</text>
+        </svg>
+        </div>
+    </div>
+
+    <!-- Checkbox at the bottom -->
+    <div class="checkline">
+        <input id="confirmRead" type="checkbox" />
+        <div class="txt">
+        <b>I have read and understood the definitions above.</b><br/>
+        (Tick this to begin.)
+        </div>
+    </div>
+    </div>
         <h2 style="margin-top:16px;">Trial setup</h2>
         <div class="row">
           <div>
@@ -235,18 +336,16 @@
       <!-- TRIAL -->
       <div id="trialPanel" class="grid2 hidden">
         <div class="panel">
-          <h2>Item entry</h2>
-          <p>Enter garment number (typing is not timed), then click <b>Start Item</b>.</p>
+          <h2>Current item</h2>
 
-          <div class="row" style="grid-template-columns: 1fr 1fr;">
-            <div>
-              <label for="itemNumber">Item number</label>
-              <input id="itemNumber" type="number" min="1" step="1" placeholder="e.g., 7" />
-              <p id="itemValidation" style="margin:8px 0 0; color:#b00020; display:none;"></p>
-            </div>
-            <div style="display:flex; align-items:end;">
-              <button id="btnStartItem" class="primary" style="width:100%;" disabled>Start Item</button>
-            </div>
+          <div class="currentItemBox">
+            <p class="currentItemBig">Item <span id="currentItemNumber">1</span></p>
+            <p class="currentItemSub">Present the physical garment in this order. Click <b>Start Item</b> to begin timing.</p>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btnStartItem" class="primary">Start Item</button>
+            <button id="btnAbort" disabled>Abort trial</button>
           </div>
 
           <div style="margin-top:10px;">
@@ -261,7 +360,7 @@
               <button id="contamYes" class="yes" disabled>Yes</button>
               <button id="contamNo" class="no" disabled>No</button>
             </div>
-            <p style="margin:8px 0 0;">If you select <b>Yes</b>, the output will show <b>Sorting</b> immediately, but you must still answer Q2.</p>
+            <p style="margin:8px 0 0;">If you select <b>Yes</b>, the output shows <b>Sorting</b> immediately. Then answer Q2.</p>
           </div>
 
           <div class="q">
@@ -274,7 +373,6 @@
 
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;">
             <button id="btnNextItem" class="primary" disabled>Next Item</button>
-            <button id="btnAbort" disabled>Abort trial</button>
           </div>
 
           <p id="hint" style="margin-top:10px;"></p>
@@ -297,8 +395,8 @@
               </div>
             </div>
 
-            <div class="bigOut" id="bigOut">Enter item number to begin</div>
-            <div class="subOut" id="subOut">Timing starts after “Start Item”.</div>
+            <div class="bigOut" id="bigOut">Click Start Item to begin</div>
+            <div class="subOut" id="subOut">Timing starts when you click “Start Item”.</div>
           </div>
 
           <h2 style="margin-top:16px;">Live log (this participant)</h2>
@@ -333,7 +431,6 @@
           <button id="btnDownloadCsv" class="primary">Download CSV</button>
           <button id="btnNewParticipant">New participant</button>
         </div>
-        <p style="margin-top:10px;">CSV includes ground truth + answers + system decision + correctness (1/0).</p>
       </div>
     </div>
   </div>
@@ -400,25 +497,22 @@
       trialStartPerf: 0,
       itemRunning: false,
       itemStartPerf: 0,
-      itemNumber: null,
+      currentItem: 1,
       ans_contam: null,
       ans_disrupt: null,
       decision_sorting: null,
       rows: [],
       trialTimerRAF: null,
-      itemTimerRAF: null,
-      trialTotalSeconds: 0
+      itemTimerRAF: null
     };
 
-    // Decision rule: Sorting if contam YES OR disrupt YES
     function computeDecisionSorting(ansContam, ansDisrupt) {
       if (ansContam === true) return true;
       if (ansContam === false && ansDisrupt === true) return true;
       if (ansContam === false && ansDisrupt === false) return false;
-      return null; // incomplete
+      return null;
     }
 
-    // Reason category derived from participant answers (for CSV)
     function deriveReasonFromAnswers(ansContam, ansDisrupt) {
       if (ansContam === true && ansDisrupt === true) return "BOTH";
       if (ansContam === true && ansDisrupt === false) return "CONTAMINATION";
@@ -444,8 +538,7 @@
     const btnResetAll = document.getElementById("btnResetAll");
     const confirmRead = document.getElementById("confirmRead");
 
-    const itemNumberInput = document.getElementById("itemNumber");
-    const itemValidation = document.getElementById("itemValidation");
+    const currentItemNumberEl = document.getElementById("currentItemNumber");
     const btnStartItem = document.getElementById("btnStartItem");
     const progressText = document.getElementById("progressText");
 
@@ -522,16 +615,7 @@
       disruptNo.disabled = !enabled;
     }
 
-    function validateItemNumber(n) {
-      const set = SETS[state.setId];
-      if (!Number.isFinite(n) || n < 1) return { ok:false, msg:"Enter a valid item number." };
-      if (n < set.min || n > set.max) return { ok:false, msg:`Item not in Set ${state.setId} (allowed ${set.min}–${set.max}).` };
-      if (!ITEMS.has(n)) return { ok:false, msg:"No ground truth defined for this item number." };
-      return { ok:true, msg:"" };
-    }
-
     function updateNextEnabled() {
-      // Require BOTH answers (Q1 and Q2) before Next is enabled
       const ok = state.itemRunning && state.ans_contam !== null && state.ans_disrupt !== null && state.decision_sorting !== null;
       btnNextItem.disabled = !ok;
     }
@@ -553,6 +637,10 @@
         `;
         logBody.appendChild(tr);
       });
+    }
+
+    function renderCurrentItem() {
+      currentItemNumberEl.textContent = String(state.currentItem);
     }
 
     // -----------------------------
@@ -592,7 +680,7 @@
     }
 
     // -----------------------------
-    // CSV export (includes correctness)
+    // CSV export
     // -----------------------------
     function toCsv(rows) {
       const headers = [
@@ -641,10 +729,8 @@
       trialTimerEl.textContent = "0.00";
       itemTimerEl.textContent = "0.00";
       progressText.textContent = "0";
-      itemNumberInput.value = "";
-      itemNumberInput.disabled = false;
-      itemValidation.style.display = "none";
-      btnStartItem.disabled = true;
+
+      btnStartItem.disabled = false;
       btnNextItem.disabled = true;
       btnAbort.disabled = true;
 
@@ -657,21 +743,16 @@
       state.decision_sorting = null;
 
       setBinOutput("READY");
-      bigOut.textContent = "Enter item number to begin";
-      subOut.textContent = "Timing starts after “Start Item”.";
+      bigOut.textContent = "Click Start Item to begin";
+      subOut.textContent = "Timing starts when you click “Start Item”.";
       state.rows = [];
       renderLog();
     }
 
     function resetForNextItem() {
-      state.itemNumber = null;
       state.ans_contam = null;
       state.ans_disrupt = null;
       state.decision_sorting = null;
-
-      itemNumberInput.value = "";
-      itemNumberInput.disabled = false;
-      btnStartItem.disabled = true;
 
       enableQuestions(false);
       resetQuestionButtons();
@@ -679,10 +760,18 @@
       btnNextItem.disabled = true;
 
       setBinOutput("READY");
-      bigOut.textContent = "Enter next item number";
-      subOut.textContent = "Timing starts after you click “Start Item”.";
-      setHint("Type the next item number, then click Start Item.");
-      itemNumberInput.focus();
+      bigOut.textContent = "Answer questions";
+      subOut.textContent = "Output will show Sorting or No Sorting.";
+      setHint("Click Start Item, then answer Q1 and Q2.");
+    }
+
+    function setStartItemState() {
+      btnStartItem.disabled = false;
+      enableQuestions(false);
+      btnNextItem.disabled = true;
+      resetQuestionButtons();
+      setBinOutput("READY");
+      setHint("Click Start Item to begin timing for this item.");
     }
 
     // -----------------------------
@@ -712,65 +801,45 @@
     });
 
     btnStartTrial.addEventListener("click", () => {
+      const set = SETS[state.setId];
+      state.currentItem = set.min;
+
       state.trialStarted = true;
       state.trialStartPerf = performance.now();
-      state.trialTotalSeconds = 0;
 
       resetForNewTrialUI();
       renderHeader();
+      renderCurrentItem();
       showPanel(trialPanel);
 
       btnAbort.disabled = false;
       startTrialTimer();
-      setHint("Type the item number, then click Start Item.");
-      itemNumberInput.focus();
-    });
-
-    itemNumberInput.addEventListener("input", () => {
-      const v = Number(itemNumberInput.value);
-      const res = validateItemNumber(v);
-      if (!itemNumberInput.value) {
-        itemValidation.style.display = "none";
-        btnStartItem.disabled = true;
-        return;
-      }
-      if (!res.ok) {
-        itemValidation.textContent = res.msg;
-        itemValidation.style.display = "block";
-        btnStartItem.disabled = true;
-      } else {
-        itemValidation.style.display = "none";
-        btnStartItem.disabled = false;
-      }
+      setStartItemState();
     });
 
     btnStartItem.addEventListener("click", () => {
-      const v = Number(itemNumberInput.value);
-      const res = validateItemNumber(v);
-      if (!res.ok) return;
-
-      state.itemNumber = v;
+      // Start item timing + enable questions
       state.itemRunning = true;
       state.itemStartPerf = performance.now();
 
       state.ans_contam = null;
       state.ans_disrupt = null;
       state.decision_sorting = null;
+
+      enableQuestions(true);
       resetQuestionButtons();
       setBinOutput("READY");
-      enableQuestions(true);
 
-      itemNumberInput.disabled = true;
       btnStartItem.disabled = true;
 
       startItemTimer();
-      setHint("Answer Q1 and Q2. Output updates as you answer.");
+      setHint("Answer Q1. If Yes, output shows Sorting immediately. Then answer Q2.");
     });
 
     function updateDecisionAndUI() {
       state.decision_sorting = computeDecisionSorting(state.ans_contam, state.ans_disrupt);
 
-      // Show Sorting immediately after Q1 yes, even before Q2.
+      // show sorting immediately after Q1 yes
       if (state.ans_contam === true) setBinOutput("SORTING");
       else if (state.decision_sorting === true) setBinOutput("SORTING");
       else if (state.decision_sorting === false) setBinOutput("NO_SORTING");
@@ -823,11 +892,10 @@
       const itemSeconds = stopItemTimerAndGetSeconds();
       const trialIndex = state.rows.length + 1;
 
-      const gt = ITEMS.get(state.itemNumber);
+      const itemNo = state.currentItem;
+      const gt = ITEMS.get(itemNo);
       const gtDecision = gt.gt_sorting ? "SORTING" : "NO_SORTING";
       const systemDecision = state.decision_sorting ? "SORTING" : "NO_SORTING";
-
-      // correctness: compare GT decision vs system decision
       const correct = (gtDecision === systemDecision) ? 1 : 0;
 
       const row = {
@@ -835,7 +903,7 @@
         participant_id: state.pid,
         set_id: state.setId,
         trial_index: trialIndex,
-        item_number: state.itemNumber,
+        item_number: itemNo,
 
         ans_contamination: state.ans_contam ? "YES" : "NO",
         ans_disruptors: state.ans_disrupt ? "YES" : "NO",
@@ -858,10 +926,13 @@
       renderLog();
       progressText.textContent = String(state.rows.length);
 
+      // advance item number
+      state.currentItem += 1;
+      renderCurrentItem();
+
+      // finish after 10 items
       if (state.rows.length >= 10) {
         const total = stopTrialTimerAndGetSeconds();
-        state.trialTotalSeconds = total;
-
         state.rows = state.rows.map(r => ({ ...r, trial_seconds_total: total.toFixed(4) }));
         renderLog();
 
@@ -871,7 +942,9 @@
         return;
       }
 
+      // reset for next item
       resetForNextItem();
+      setStartItemState();
     });
 
     btnAbort.addEventListener("click", () => {
@@ -911,6 +984,7 @@
     state.pid = getPid();
     renderHeader();
     setBinOutput("READY");
+    renderCurrentItem();
   </script>
 </body>
 </html>
