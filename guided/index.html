@@ -1,12 +1,916 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Guided Sorting</title>
-  </head>
-  <body>
-    <h1>Guided Sorting (placeholder)</h1>
-    <p>If you can see this, Live Server is working.</p>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guided Sorting</title>
+  <style>
+    :root{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --bg:#f6f6f6; --card:#fff; --text:#111; --muted:#555;
+      --border:#e6e6e6; --shadow: 0 2px 14px rgba(0,0,0,.06);
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 20px; }
+    .card{ background:var(--card); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+    h1{ margin:0 0 8px; font-size: 22px; }
+    h2{ margin: 16px 0 8px; font-size: 18px; }
+    h3{ margin: 12px 0 6px; font-size: 15px; }
+    p{ margin: 8px 0; color: var(--muted); line-height: 1.45; }
+    ul{ margin: 8px 0 8px 18px; color: var(--muted); }
+    li{ margin: 4px 0; }
+
+    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 860px){ .row{ grid-template-columns:1fr; } }
+
+    label{ font-size: 13px; color: var(--muted); display:block; margin-bottom: 6px; }
+    input, select, button { font: inherit; }
+    input[type="number"], select{
+      width:100%; padding: 10px 12px; border-radius: 12px; border: 1px solid #ccc; background:#fff;
+    }
+
+    button{
+      padding: 10px 12px; border-radius: 12px; border: 1px solid #bbb; background:#fff; cursor:pointer;
+    }
+    button.primary{ background:#111; color:#fff; border-color:#111; }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .pill{ display:inline-block; padding: 4px 10px; border-radius: 999px; background:#eee; font-size: 12px; margin-right: 8px; }
+    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .topbar .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 860px){ .grid2{ grid-template-columns:1fr; } }
+
+    .panel{ border: 1px solid var(--border); border-radius: 16px; padding: 14px; background:#fafafa; }
+
+    .definitions{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .definitions .box{
+      border: 1px solid var(--border);
+      background:#fafafa;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .q{ background:#fff; border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+    .qTitle{ font-weight: 650; margin-bottom: 10px; }
+    .qBtns{ display:flex; gap: 10px; flex-wrap: wrap; }
+    .qBtns button{ flex: 1; padding: 12px; font-weight: 650; min-width: 130px; }
+    .yes{ border-color:#1a7f37; }
+    .no{ border-color:#9a9a9a; }
+    .selected{ outline: 3px solid rgba(17,17,17,.18); }
+
+    /* Bin “animation” */
+    .binStage{ background:#fff; border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+    .binWrap{ display:flex; justify-content:center; padding: 10px 0; }
+    .bin{
+      width: 260px; height: 250px; border-radius: 18px;
+      position: relative; border: 2px solid rgba(0,0,0,.08);
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+      overflow:hidden;
+      transform: translateZ(0);
+    }
+    .bin .lid{
+      position:absolute; top:0; left:0; right:0;
+      height: 54px;
+      background: rgba(0,0,0,.10);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform .25s ease;
+    }
+    .bin .slot{
+      position:absolute; top: 70px;
+      width: 70%; height: 12px; border-radius: 999px;
+      background: rgba(0,0,0,.25);
+    }
+    .bin .label{
+      width: 82%;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 12px;
+      padding: 10px;
+      text-align:center;
+      margin-bottom: 16px;
+      font-weight: 850;
+    }
+    .bin .icons{
+      position:absolute; top: 12px; right: 12px;
+      display:flex; gap:8px;
+      opacity: 0; transform: translateY(-6px);
+      transition: opacity .25s ease, transform .25s ease;
+      font-size: 18px;
+    }
+    .bin .badge{
+      width: 34px; height: 34px; border-radius: 999px;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.10);
+    }
+
+    .bin.noSorting{ background: #bfe8ff; }
+    .bin.sorting{ background: #ffd0d0; }
+
+    .showResult .bin .lid{ transform: rotateX(35deg); }
+    .showResult.sortingShake .bin{ animation: shake .25s ease-in-out 1; }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      25%{ transform: translateX(-4px); }
+      50%{ transform: translateX(4px); }
+      75%{ transform: translateX(-3px); }
+      100%{ transform: translateX(0); }
+    }
+    .showResult .bin .icons{ opacity: 1; transform: translateY(0); }
+
+    .bigOut{ font-size: 26px; font-weight: 900; text-align:center; margin: 8px 0 0; }
+    .subOut{ text-align:center; color: var(--muted); margin-top: 4px; }
+    .hidden{ display:none !important; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 13px; }
+    th, td{ border-bottom: 1px solid #eee; padding: 8px 6px; text-align:left; }
+    th{ background:#fafafa; }
+    .ok{ font-weight: 800; color: #0a7a2f; }
+    .bad{ font-weight: 800; color: #b00020; }
+
+    .checkline{
+      display:flex; gap:10px; align-items:flex-start;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background:#fff;
+    }
+    .checkline input{ margin-top: 4px; }
+    .checkline .txt{ color: var(--muted); font-size: 13px; line-height: 1.35; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div class="left">
+          <span class="pill">Mode: Guided</span>
+          <span class="pill">Participant: <b id="participantId">1</b></span>
+          <span class="pill">Set: <b id="setLabel">A</b></span>
+          <span class="pill">Trial timer: <b id="trialTimer">0.00</b> s</span>
+          <span class="pill">Item timer: <b id="itemTimer">0.00</b> s</span>
+        </div>
+      </div>
+
+      <h1>Guided Sorting (software simulation)</h1>
+      <p>Participants hold the physical garment. Timing begins after item number entry and clicking <b>Start Item</b>.</p>
+
+      <!-- SETUP -->
+      <div id="setupPanel" class="panel">
+        <h2>Participant briefing</h2>
+
+        <div class="definitions">
+          <p style="margin-top:0;">
+            Please read the definitions below before starting. In this study, an item is sent to <b>Sorting</b> if it has
+            <b>any contamination</b> or <b>any disruptors</b>. If it has neither, it goes to <b>No Sorting</b>.
+          </p>
+
+          <div class="box">
+            <h3>Disruptors (examples)</h3>
+            <p style="margin-top:0;">
+              Any item with <b>buttons</b>, <b>zips</b>, <b>trims</b>, or other <b>non-textile materials</b>.
+            </p>
+            <ul>
+              <li>Metal/plastic hardware: zips, studs, rivets, snaps, eyelets</li>
+              <li>Non-textile inserts/attachments: hard labels, plastic parts, electronics (if present)</li>
+              <li>Complex assemblies: heavy embellishment, multiple attached materials</li>
+            </ul>
+          </div>
+
+          <div class="box">
+            <h3>Contamination (examples)</h3>
+            <p style="margin-top:0;">
+              Items showing <b>moisture</b>, <b>oils</b>, or <b>large stains</b>. No hazardous/toxic substances are used in this trial.
+            </p>
+            <ul>
+              <li>Wet/damp fabric or visible moisture</li>
+              <li>Oil/grease marks</li>
+              <li>Large food/soil stains</li>
+            </ul>
+          </div>
+
+          <div class="checkline">
+            <input id="confirmRead" type="checkbox" />
+            <div class="txt">
+              <b>I have read and understood the definitions above.</b><br/>
+              (You must tick this to begin.)
+            </div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:16px;">Trial setup</h2>
+        <div class="row">
+          <div>
+            <label for="setSelect">Select item set</label>
+            <select id="setSelect">
+              <option value="A">Set A (items 1–10)</option>
+              <option value="B">Set B (items 11–20)</option>
+              <option value="C">Set C (items 21–30)</option>
+              <option value="D">Set D (items 31–40)</option>
+            </select>
+          </div>
+          <div>
+            <label>Trial length</label>
+            <div class="pill">Fixed: 10 items</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="btnStartTrial" class="primary" disabled>Start Trial</button>
+          <button id="btnResetAll">Reset everything</button>
+        </div>
+      </div>
+
+      <!-- TRIAL -->
+      <div id="trialPanel" class="grid2 hidden">
+        <div class="panel">
+          <h2>Item entry</h2>
+          <p>Enter garment number (typing is not timed), then click <b>Start Item</b>.</p>
+
+          <div class="row" style="grid-template-columns: 1fr 1fr;">
+            <div>
+              <label for="itemNumber">Item number</label>
+              <input id="itemNumber" type="number" min="1" step="1" placeholder="e.g., 7" />
+              <p id="itemValidation" style="margin:8px 0 0; color:#b00020; display:none;"></p>
+            </div>
+            <div style="display:flex; align-items:end;">
+              <button id="btnStartItem" class="primary" style="width:100%;" disabled>Start Item</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <span class="pill">Progress: <b id="progressText">0</b>/10</span>
+          </div>
+
+          <h2 style="margin-top:16px;">Questions</h2>
+
+          <div class="q">
+            <div class="qTitle">Q1: Any contamination present?</div>
+            <div class="qBtns">
+              <button id="contamYes" class="yes" disabled>Yes</button>
+              <button id="contamNo" class="no" disabled>No</button>
+            </div>
+            <p style="margin:8px 0 0;">If you select <b>Yes</b>, the output will show <b>Sorting</b> immediately, but you must still answer Q2.</p>
+          </div>
+
+          <div class="q">
+            <div class="qTitle">Q2: Any disruptors present?</div>
+            <div class="qBtns">
+              <button id="disruptYes" class="yes" disabled>Yes</button>
+              <button id="disruptNo" class="no" disabled>No</button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;">
+            <button id="btnNextItem" class="primary" disabled>Next Item</button>
+            <button id="btnAbort" disabled>Abort trial</button>
+          </div>
+
+          <p id="hint" style="margin-top:10px;"></p>
+        </div>
+
+        <div class="panel">
+          <h2>Routing output</h2>
+          <div id="binStage" class="binStage">
+            <div class="binWrap">
+              <div id="bin" class="bin noSorting">
+                <div class="lid"></div>
+                <div class="slot"></div>
+
+                <div class="icons">
+                  <div class="badge" title="Contamination">🧪</div>
+                  <div class="badge" title="Disruptor">🔩</div>
+                </div>
+
+                <div class="label" id="binLabel">READY</div>
+              </div>
+            </div>
+
+            <div class="bigOut" id="bigOut">Enter item number to begin</div>
+            <div class="subOut" id="subOut">Timing starts after “Start Item”.</div>
+          </div>
+
+          <h2 style="margin-top:16px;">Live log (this participant)</h2>
+          <div style="max-height: 260px; overflow:auto; border:1px solid var(--border); border-radius: 14px; background:#fff;">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item</th>
+                  <th>Ans contam</th>
+                  <th>Ans disrupt</th>
+                  <th>Decision</th>
+                  <th>GT decision</th>
+                  <th>Correct</th>
+                  <th>Item s</th>
+                </tr>
+              </thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINISH -->
+      <div id="finishPanel" class="panel hidden">
+        <h2>Trial finished</h2>
+        <p>
+          Participant <b id="finishPid">1</b> completed 10 items in
+          <b id="finishTime">0.00</b> seconds.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="btnDownloadCsv" class="primary">Download CSV</button>
+          <button id="btnNewParticipant">New participant</button>
+        </div>
+        <p style="margin-top:10px;">CSV includes ground truth + answers + system decision + correctness (1/0).</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // 40 items with placeholder ground truths (EDIT LATER)
+    // -----------------------------
+    function makeItem(i, gtContam, gtDisrupt, tags=[]) {
+      const gtSorting = !!(gtContam || gtDisrupt);
+      const gtReason = gtContam && gtDisrupt ? "BOTH" : gtContam ? "CONTAMINATION" : gtDisrupt ? "DISRUPTOR" : "CLEAR";
+      return {
+        item_id: i,
+        tags,
+        gt_contamination: !!gtContam,
+        gt_disruptor: !!gtDisrupt,
+        gt_sorting: gtSorting,
+        gt_reason: gtReason
+      };
+    }
+
+    const ITEMS = new Map([
+      makeItem(1,true,false,["stain"]), makeItem(2,false,false,["clear"]), makeItem(3,false,true,["metal_zip"]),
+      makeItem(4,true,true,["wet","metal"]), makeItem(5,false,false,["clear"]), makeItem(6,true,false,["food"]),
+      makeItem(7,false,true,["studs"]), makeItem(8,false,false,["clear"]), makeItem(9,true,false,["oil"]),
+      makeItem(10,false,true,["zip"]), makeItem(11,false,false,["clear"]), makeItem(12,true,false,["mud"]),
+      makeItem(13,false,true,["buttons"]), makeItem(14,false,false,["clear"]), makeItem(15,true,false,["paint"]),
+      makeItem(16,false,false,["clear"]), makeItem(17,false,true,["hardware"]), makeItem(18,false,false,["clear"]),
+      makeItem(19,true,true,["wet","electronics_sim"]), makeItem(20,false,false,["clear"]), makeItem(21,false,true,["metal"]),
+      makeItem(22,true,false,["unknown_stain"]), makeItem(23,false,false,["clear"]), makeItem(24,false,true,["zip"]),
+      makeItem(25,true,false,["odour_sim"]), makeItem(26,false,false,["clear"]), makeItem(27,false,true,["rivets"]),
+      makeItem(28,false,false,["clear"]), makeItem(29,true,false,["wet"]), makeItem(30,false,true,["metal_zip"]),
+      makeItem(31,false,false,["clear"]), makeItem(32,true,true,["wet","metal"]), makeItem(33,false,false,["clear"]),
+      makeItem(34,false,true,["studs"]), makeItem(35,true,false,["food"]), makeItem(36,false,false,["clear"]),
+      makeItem(37,false,true,["buttons"]), makeItem(38,true,false,["oil"]), makeItem(39,false,false,["clear"]),
+      makeItem(40,true,true,["electronics_sim","wet"])
+    ].map(x => [x.item_id, x]));
+
+    // -----------------------------
+    // Participant numbering (auto)
+    // -----------------------------
+    const PID_KEY = "triage_pid_counter";
+    function getPid() {
+      const v = Number(localStorage.getItem(PID_KEY) || "1");
+      return Number.isFinite(v) && v >= 1 ? v : 1;
+    }
+    function setPid(v) { localStorage.setItem(PID_KEY, String(v)); }
+
+    // 4 sets of 10
+    const SETS = {
+      A: { label: "A", min: 1,  max: 10 },
+      B: { label: "B", min: 11, max: 20 },
+      C: { label: "C", min: 21, max: 30 },
+      D: { label: "D", min: 31, max: 40 }
+    };
+
+    // -----------------------------
+    // State
+    // -----------------------------
+    const state = {
+      pid: getPid(),
+      setId: "A",
+      trialStarted: false,
+      trialStartPerf: 0,
+      itemRunning: false,
+      itemStartPerf: 0,
+      itemNumber: null,
+      ans_contam: null,
+      ans_disrupt: null,
+      decision_sorting: null,
+      rows: [],
+      trialTimerRAF: null,
+      itemTimerRAF: null,
+      trialTotalSeconds: 0
+    };
+
+    // Decision rule: Sorting if contam YES OR disrupt YES
+    function computeDecisionSorting(ansContam, ansDisrupt) {
+      if (ansContam === true) return true;
+      if (ansContam === false && ansDisrupt === true) return true;
+      if (ansContam === false && ansDisrupt === false) return false;
+      return null; // incomplete
+    }
+
+    // Reason category derived from participant answers (for CSV)
+    function deriveReasonFromAnswers(ansContam, ansDisrupt) {
+      if (ansContam === true && ansDisrupt === true) return "BOTH";
+      if (ansContam === true && ansDisrupt === false) return "CONTAMINATION";
+      if (ansContam === false && ansDisrupt === true) return "DISRUPTOR";
+      if (ansContam === false && ansDisrupt === false) return "CLEAR";
+      return "";
+    }
+
+    // -----------------------------
+    // Elements
+    // -----------------------------
+    const participantIdEl = document.getElementById("participantId");
+    const setLabelEl = document.getElementById("setLabel");
+    const trialTimerEl = document.getElementById("trialTimer");
+    const itemTimerEl = document.getElementById("itemTimer");
+
+    const setupPanel = document.getElementById("setupPanel");
+    const trialPanel = document.getElementById("trialPanel");
+    const finishPanel = document.getElementById("finishPanel");
+
+    const setSelect = document.getElementById("setSelect");
+    const btnStartTrial = document.getElementById("btnStartTrial");
+    const btnResetAll = document.getElementById("btnResetAll");
+    const confirmRead = document.getElementById("confirmRead");
+
+    const itemNumberInput = document.getElementById("itemNumber");
+    const itemValidation = document.getElementById("itemValidation");
+    const btnStartItem = document.getElementById("btnStartItem");
+    const progressText = document.getElementById("progressText");
+
+    const contamYes = document.getElementById("contamYes");
+    const contamNo = document.getElementById("contamNo");
+    const disruptYes = document.getElementById("disruptYes");
+    const disruptNo = document.getElementById("disruptNo");
+
+    const btnNextItem = document.getElementById("btnNextItem");
+    const btnAbort = document.getElementById("btnAbort");
+
+    const hintEl = document.getElementById("hint");
+
+    const binStage = document.getElementById("binStage");
+    const binEl = document.getElementById("bin");
+    const binLabel = document.getElementById("binLabel");
+    const bigOut = document.getElementById("bigOut");
+    const subOut = document.getElementById("subOut");
+
+    const logBody = document.getElementById("logBody");
+
+    const finishPid = document.getElementById("finishPid");
+    const finishTime = document.getElementById("finishTime");
+    const btnDownloadCsv = document.getElementById("btnDownloadCsv");
+    const btnNewParticipant = document.getElementById("btnNewParticipant");
+
+    // -----------------------------
+    // UI helpers
+    // -----------------------------
+    function renderHeader() {
+      participantIdEl.textContent = state.pid;
+      setLabelEl.textContent = state.setId;
+    }
+    function setHint(msg) { hintEl.textContent = msg || ""; }
+
+    function showPanel(which) {
+      setupPanel.classList.add("hidden");
+      trialPanel.classList.add("hidden");
+      finishPanel.classList.add("hidden");
+      which.classList.remove("hidden");
+    }
+
+    function setBinOutput(mode) {
+      binStage.classList.remove("showResult", "sortingShake");
+      if (mode === "READY") {
+        binEl.classList.remove("sorting");
+        binEl.classList.add("noSorting");
+        binLabel.textContent = "READY";
+        bigOut.textContent = "Answer questions";
+        subOut.textContent = "Output will show Sorting or No Sorting.";
+        return;
+      }
+      const isSorting = (mode === "SORTING");
+      binEl.classList.toggle("sorting", isSorting);
+      binEl.classList.toggle("noSorting", !isSorting);
+      binLabel.textContent = isSorting ? "SORTING BIN" : "NO SORTING BIN";
+      bigOut.textContent = isSorting ? "SORTING" : "NO SORTING";
+      subOut.textContent = isSorting ? "Contamination and/or disruptors indicated." : "No contamination or disruptors indicated.";
+
+      binStage.classList.add("showResult");
+      if (isSorting) binStage.classList.add("sortingShake");
+      setTimeout(() => binStage.classList.remove("sortingShake"), 300);
+    }
+
+    function resetQuestionButtons() {
+      [contamYes, contamNo, disruptYes, disruptNo].forEach(b => b.classList.remove("selected"));
+    }
+    function selectBtn(btn){ btn.classList.add("selected"); }
+
+    function enableQuestions(enabled) {
+      contamYes.disabled = !enabled;
+      contamNo.disabled = !enabled;
+      disruptYes.disabled = !enabled;
+      disruptNo.disabled = !enabled;
+    }
+
+    function validateItemNumber(n) {
+      const set = SETS[state.setId];
+      if (!Number.isFinite(n) || n < 1) return { ok:false, msg:"Enter a valid item number." };
+      if (n < set.min || n > set.max) return { ok:false, msg:`Item not in Set ${state.setId} (allowed ${set.min}–${set.max}).` };
+      if (!ITEMS.has(n)) return { ok:false, msg:"No ground truth defined for this item number." };
+      return { ok:true, msg:"" };
+    }
+
+    function updateNextEnabled() {
+      // Require BOTH answers (Q1 and Q2) before Next is enabled
+      const ok = state.itemRunning && state.ans_contam !== null && state.ans_disrupt !== null && state.decision_sorting !== null;
+      btnNextItem.disabled = !ok;
+    }
+
+    function renderLog() {
+      logBody.innerHTML = "";
+      state.rows.forEach((r, idx) => {
+        const correct = r.correct === 1 ? `<span class="ok">YES</span>` : `<span class="bad">NO</span>`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${r.item_number}</td>
+          <td>${r.ans_contamination}</td>
+          <td>${r.ans_disruptors}</td>
+          <td><b>${r.system_decision}</b></td>
+          <td>${r.gt_decision}</td>
+          <td>${correct}</td>
+          <td>${Number(r.item_seconds).toFixed(2)}</td>
+        `;
+        logBody.appendChild(tr);
+      });
+    }
+
+    // -----------------------------
+    // Timers
+    // -----------------------------
+    function startTrialTimer() {
+      const tick = () => {
+        if (!state.trialStarted) return;
+        const s = (performance.now() - state.trialStartPerf) / 1000;
+        trialTimerEl.textContent = s.toFixed(2);
+        state.trialTimerRAF = requestAnimationFrame(tick);
+      };
+      state.trialTimerRAF = requestAnimationFrame(tick);
+    }
+    function startItemTimer() {
+      const tick = () => {
+        if (!state.itemRunning) return;
+        const s = (performance.now() - state.itemStartPerf) / 1000;
+        itemTimerEl.textContent = s.toFixed(2);
+        state.itemTimerRAF = requestAnimationFrame(tick);
+      };
+      state.itemTimerRAF = requestAnimationFrame(tick);
+    }
+    function stopItemTimerAndGetSeconds() {
+      state.itemRunning = false;
+      if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
+      const s = (performance.now() - state.itemStartPerf) / 1000;
+      itemTimerEl.textContent = s.toFixed(2);
+      return s;
+    }
+    function stopTrialTimerAndGetSeconds() {
+      state.trialStarted = false;
+      if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
+      const s = (performance.now() - state.trialStartPerf) / 1000;
+      trialTimerEl.textContent = s.toFixed(2);
+      return s;
+    }
+
+    // -----------------------------
+    // CSV export (includes correctness)
+    // -----------------------------
+    function toCsv(rows) {
+      const headers = [
+        "timestamp_iso",
+        "participant_id",
+        "set_id",
+        "trial_index",
+        "item_number",
+        "ans_contamination",
+        "ans_disruptors",
+        "ans_reason_category",
+        "system_decision",
+        "gt_contamination",
+        "gt_disruptor",
+        "gt_reason",
+        "gt_decision",
+        "correct",
+        "item_seconds",
+        "trial_seconds_total"
+      ];
+      const escape = (v) => {
+        const s = String(v ?? "");
+        if (s.includes('"') || s.includes(",") || s.includes("\n")) return '"' + s.replaceAll('"', '""') + '"';
+        return s;
+      };
+      const lines = [headers.join(",")];
+      for (const r of rows) lines.push(headers.map(h => escape(r[h])).join(","));
+      return lines.join("\n");
+    }
+    function downloadCsv(filename, csvText) {
+      const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // -----------------------------
+    // Reset helpers
+    // -----------------------------
+    function resetForNewTrialUI() {
+      trialTimerEl.textContent = "0.00";
+      itemTimerEl.textContent = "0.00";
+      progressText.textContent = "0";
+      itemNumberInput.value = "";
+      itemNumberInput.disabled = false;
+      itemValidation.style.display = "none";
+      btnStartItem.disabled = true;
+      btnNextItem.disabled = true;
+      btnAbort.disabled = true;
+
+      enableQuestions(false);
+      resetQuestionButtons();
+
+      setHint("");
+      state.ans_contam = null;
+      state.ans_disrupt = null;
+      state.decision_sorting = null;
+
+      setBinOutput("READY");
+      bigOut.textContent = "Enter item number to begin";
+      subOut.textContent = "Timing starts after “Start Item”.";
+      state.rows = [];
+      renderLog();
+    }
+
+    function resetForNextItem() {
+      state.itemNumber = null;
+      state.ans_contam = null;
+      state.ans_disrupt = null;
+      state.decision_sorting = null;
+
+      itemNumberInput.value = "";
+      itemNumberInput.disabled = false;
+      btnStartItem.disabled = true;
+
+      enableQuestions(false);
+      resetQuestionButtons();
+
+      btnNextItem.disabled = true;
+
+      setBinOutput("READY");
+      bigOut.textContent = "Enter next item number";
+      subOut.textContent = "Timing starts after you click “Start Item”.";
+      setHint("Type the next item number, then click Start Item.");
+      itemNumberInput.focus();
+    }
+
+    // -----------------------------
+    // Events
+    // -----------------------------
+    confirmRead.addEventListener("change", () => {
+      btnStartTrial.disabled = !confirmRead.checked;
+    });
+
+    setSelect.addEventListener("change", () => {
+      state.setId = setSelect.value;
+      renderHeader();
+    });
+
+    btnResetAll.addEventListener("click", () => {
+      if (!confirm("Reset participant counter and clear current trial state?")) return;
+      setPid(1);
+      state.pid = 1;
+      state.setId = "A";
+      setSelect.value = "A";
+      confirmRead.checked = false;
+      btnStartTrial.disabled = true;
+
+      renderHeader();
+      resetForNewTrialUI();
+      showPanel(setupPanel);
+    });
+
+    btnStartTrial.addEventListener("click", () => {
+      state.trialStarted = true;
+      state.trialStartPerf = performance.now();
+      state.trialTotalSeconds = 0;
+
+      resetForNewTrialUI();
+      renderHeader();
+      showPanel(trialPanel);
+
+      btnAbort.disabled = false;
+      startTrialTimer();
+      setHint("Type the item number, then click Start Item.");
+      itemNumberInput.focus();
+    });
+
+    itemNumberInput.addEventListener("input", () => {
+      const v = Number(itemNumberInput.value);
+      const res = validateItemNumber(v);
+      if (!itemNumberInput.value) {
+        itemValidation.style.display = "none";
+        btnStartItem.disabled = true;
+        return;
+      }
+      if (!res.ok) {
+        itemValidation.textContent = res.msg;
+        itemValidation.style.display = "block";
+        btnStartItem.disabled = true;
+      } else {
+        itemValidation.style.display = "none";
+        btnStartItem.disabled = false;
+      }
+    });
+
+    btnStartItem.addEventListener("click", () => {
+      const v = Number(itemNumberInput.value);
+      const res = validateItemNumber(v);
+      if (!res.ok) return;
+
+      state.itemNumber = v;
+      state.itemRunning = true;
+      state.itemStartPerf = performance.now();
+
+      state.ans_contam = null;
+      state.ans_disrupt = null;
+      state.decision_sorting = null;
+      resetQuestionButtons();
+      setBinOutput("READY");
+      enableQuestions(true);
+
+      itemNumberInput.disabled = true;
+      btnStartItem.disabled = true;
+
+      startItemTimer();
+      setHint("Answer Q1 and Q2. Output updates as you answer.");
+    });
+
+    function updateDecisionAndUI() {
+      state.decision_sorting = computeDecisionSorting(state.ans_contam, state.ans_disrupt);
+
+      // Show Sorting immediately after Q1 yes, even before Q2.
+      if (state.ans_contam === true) setBinOutput("SORTING");
+      else if (state.decision_sorting === true) setBinOutput("SORTING");
+      else if (state.decision_sorting === false) setBinOutput("NO_SORTING");
+      else setBinOutput("READY");
+
+      updateNextEnabled();
+    }
+
+    contamYes.addEventListener("click", () => {
+      state.ans_contam = true;
+      const d = state.ans_disrupt;
+      resetQuestionButtons();
+      selectBtn(contamYes);
+      if (d === true) selectBtn(disruptYes);
+      if (d === false) selectBtn(disruptNo);
+      updateDecisionAndUI();
+    });
+
+    contamNo.addEventListener("click", () => {
+      state.ans_contam = false;
+      const d = state.ans_disrupt;
+      resetQuestionButtons();
+      selectBtn(contamNo);
+      if (d === true) selectBtn(disruptYes);
+      if (d === false) selectBtn(disruptNo);
+      updateDecisionAndUI();
+    });
+
+    disruptYes.addEventListener("click", () => {
+      state.ans_disrupt = true;
+      const c = state.ans_contam;
+      resetQuestionButtons();
+      if (c === true) selectBtn(contamYes);
+      if (c === false) selectBtn(contamNo);
+      selectBtn(disruptYes);
+      updateDecisionAndUI();
+    });
+
+    disruptNo.addEventListener("click", () => {
+      state.ans_disrupt = false;
+      const c = state.ans_contam;
+      resetQuestionButtons();
+      if (c === true) selectBtn(contamYes);
+      if (c === false) selectBtn(contamNo);
+      selectBtn(disruptNo);
+      updateDecisionAndUI();
+    });
+
+    btnNextItem.addEventListener("click", () => {
+      const itemSeconds = stopItemTimerAndGetSeconds();
+      const trialIndex = state.rows.length + 1;
+
+      const gt = ITEMS.get(state.itemNumber);
+      const gtDecision = gt.gt_sorting ? "SORTING" : "NO_SORTING";
+      const systemDecision = state.decision_sorting ? "SORTING" : "NO_SORTING";
+
+      // correctness: compare GT decision vs system decision
+      const correct = (gtDecision === systemDecision) ? 1 : 0;
+
+      const row = {
+        timestamp_iso: new Date().toISOString(),
+        participant_id: state.pid,
+        set_id: state.setId,
+        trial_index: trialIndex,
+        item_number: state.itemNumber,
+
+        ans_contamination: state.ans_contam ? "YES" : "NO",
+        ans_disruptors: state.ans_disrupt ? "YES" : "NO",
+        ans_reason_category: deriveReasonFromAnswers(state.ans_contam, state.ans_disrupt),
+
+        system_decision: systemDecision,
+
+        gt_contamination: gt.gt_contamination ? "YES" : "NO",
+        gt_disruptor: gt.gt_disruptor ? "YES" : "NO",
+        gt_reason: gt.gt_reason,
+        gt_decision: gtDecision,
+
+        correct: correct,
+
+        item_seconds: itemSeconds.toFixed(4),
+        trial_seconds_total: ""
+      };
+
+      state.rows.push(row);
+      renderLog();
+      progressText.textContent = String(state.rows.length);
+
+      if (state.rows.length >= 10) {
+        const total = stopTrialTimerAndGetSeconds();
+        state.trialTotalSeconds = total;
+
+        state.rows = state.rows.map(r => ({ ...r, trial_seconds_total: total.toFixed(4) }));
+        renderLog();
+
+        finishPid.textContent = state.pid;
+        finishTime.textContent = total.toFixed(2);
+        showPanel(finishPanel);
+        return;
+      }
+
+      resetForNextItem();
+    });
+
+    btnAbort.addEventListener("click", () => {
+      if (!confirm("Abort this trial?")) return;
+      if (state.itemRunning) {
+        state.itemRunning = false;
+        if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
+      }
+      if (state.trialStarted) {
+        state.trialStarted = false;
+        if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
+      }
+      resetForNewTrialUI();
+      showPanel(setupPanel);
+    });
+
+    btnDownloadCsv.addEventListener("click", () => {
+      const ts = new Date().toISOString().slice(0,19).replaceAll(":", "-");
+      const filename = `guided_participant_${state.pid}_set${state.setId}_${ts}.csv`;
+      downloadCsv(filename, toCsv(state.rows));
+    });
+
+    btnNewParticipant.addEventListener("click", () => {
+      const next = state.pid + 1;
+      state.pid = next;
+      setPid(next);
+      renderHeader();
+
+      confirmRead.checked = false;
+      btnStartTrial.disabled = true;
+
+      resetForNewTrialUI();
+      showPanel(setupPanel);
+    });
+
+    // Init
+    state.pid = getPid();
+    renderHeader();
+    setBinOutput("READY");
+  </script>
+</body>
 </html>
