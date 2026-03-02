@@ -1,12 +1,826 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Manual Sorting</title>
-  </head>
-  <body>
-    <h1>Manual Sorting (placeholder)</h1>
-    <p>If you can see this, Live Server is working.</p>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual Sorting</title>
+  <style>
+    :root{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --bg:#f6f6f6; --card:#fff; --text:#111; --muted:#555;
+      --border:#e6e6e6; --shadow: 0 2px 14px rgba(0,0,0,.06);
+      --red:#ffd0d0; --blue:#bfe8ff;
+    }
+    body{ margin:0; background:var(--bg); color:var(--text); }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 20px; }
+    .card{ background:var(--card); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+    h1{ margin:0 0 8px; font-size: 22px; }
+    h2{ margin: 16px 0 8px; font-size: 18px; }
+    h3{ margin: 12px 0 6px; font-size: 15px; }
+    p{ margin: 8px 0; color: var(--muted); line-height: 1.45; }
+    ul{ margin: 8px 0 8px 18px; color: var(--muted); }
+    li{ margin: 4px 0; }
+
+    label{ font-size: 13px; color: var(--muted); display:block; margin-bottom: 6px; }
+    select, button { font: inherit; }
+    select{
+      width:100%; padding: 10px 12px; border-radius: 12px; border: 1px solid #ccc; background:#fff;
+    }
+    button{
+      padding: 10px 12px; border-radius: 12px; border: 1px solid #bbb; background:#fff; cursor:pointer;
+    }
+    button.primary{ background:#111; color:#fff; border-color:#111; }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .pill{ display:inline-block; padding: 4px 10px; border-radius: 999px; background:#eee; font-size: 12px; margin-right: 8px; }
+    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .topbar .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+    .panel{ border: 1px solid var(--border); border-radius: 16px; padding: 14px; background:#fafafa; }
+
+    .definitions{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .defRow{
+      display:grid;
+      grid-template-columns: 1fr 260px;
+      gap: 14px;
+      align-items: start;
+      margin-top: 10px;
+    }
+    @media (max-width: 860px){
+      .defRow{ grid-template-columns: 1fr; }
+    }
+    .defCard{
+      border: 1px solid var(--border);
+      background:#fafafa;
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .defArt{
+      border: 1px solid var(--border);
+      background:#fff;
+      border-radius: 14px;
+      padding: 10px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .checkline{
+      display:flex; gap:10px; align-items:flex-start;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background:#fff;
+    }
+    .checkline input{ margin-top: 4px; }
+    .checkline .txt{ color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    .hidden{ display:none !important; }
+
+    /* Demo bins on briefing page */
+    .demoRow{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 860px){ .demoRow{ grid-template-columns:1fr; } }
+    .demoBin{
+      border-radius: 16px;
+      border: 2px solid rgba(0,0,0,.10);
+      background:#fff;
+      padding: 12px;
+    }
+    .demoVisual{
+      height: 160px;
+      border-radius: 16px;
+      border: 2px solid rgba(0,0,0,.08);
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+    }
+    .demoVisual .lid{ position:absolute; top:0; left:0; right:0; height: 46px; background: rgba(0,0,0,.10); }
+    .demoVisual .slot{ position:absolute; top: 64px; width: 70%; height: 10px; border-radius: 999px; background: rgba(0,0,0,.25); }
+    .demoLabel{
+      width: 88%;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+      text-align:center;
+      font-weight: 950;
+      letter-spacing: .2px;
+    }
+    .demoSub{ text-align:center; color: var(--muted); margin-top: 10px; font-size: 13px; }
+    .red{ background: var(--red); }
+    .blue{ background: var(--blue); }
+
+    /* Fullscreen TRIAL page */
+    .fullscreen{
+      width: 100vw;
+      height: 100vh;
+      padding: 18px;
+      box-sizing: border-box;
+      background: var(--bg);
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .fsTop{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content: space-between;
+    }
+    .fsTop .left{ display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
+
+    .fsMain{
+      flex: 1;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    @media (max-width: 860px){ .fsMain{ grid-template-columns: 1fr; } }
+
+    .bigBin{
+      border-radius: 26px;
+      border: 3px solid rgba(0,0,0,.10);
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+      background:#fff;
+      min-height: 360px;
+    }
+    .bigBin:hover{ box-shadow: 0 14px 40px rgba(0,0,0,.12); transform: translateY(-2px); }
+    .bigBin:active{ transform: translateY(0px) scale(0.995); }
+    .bigBin.disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; transform:none; }
+    .bigBin.selected{ border-color:#111; box-shadow: 0 16px 44px rgba(0,0,0,.14); }
+
+    .bigBinTop{
+      height: 88px;
+      background: rgba(0,0,0,.10);
+      position: relative;
+    }
+    .bigBinSlot{
+      position:absolute;
+      left: 15%;
+      right: 15%;
+      top: 52px;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.28);
+    }
+    .bigBinBody{
+      flex: 1;
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      text-align:center;
+    }
+    .bigBinText{
+      font-weight: 1000;
+      font-size: clamp(22px, 3.2vw, 44px);
+      letter-spacing: 0.4px;
+      line-height: 1.05;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 18px;
+      padding: 18px 16px;
+      width: 86%;
+    }
+    .bigBinFooter{
+      padding: 14px 16px;
+      text-align:center;
+      font-size: 14px;
+      color: rgba(0,0,0,.70);
+      background: rgba(255,255,255,.35);
+      border-top: 1px solid rgba(0,0,0,.08);
+    }
+    .bgRed{ background: var(--red); }
+    .bgBlue{ background: var(--blue); }
+
+    .fsBottom{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content: space-between;
+    }
+
+    .currentItemPill{
+      display:inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background:#fff;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- SETUP / BRIEFING -->
+  <div id="setupWrap" class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div class="left">
+          <span class="pill">Mode: Manual</span>
+          <span class="pill">Participant: <b id="participantId_setup">1</b></span>
+          <span class="pill">Set: <b id="setLabel_setup">A</b></span>
+        </div>
+      </div>
+
+      <h1>Manual Sorting (software simulation)</h1>
+      <p>Hold the physical garment. When the trial starts, click the bin you think the item belongs in.</p>
+
+      <div class="panel">
+        <h2>Participant briefing</h2>
+
+        <div class="definitions">
+          <p style="margin-top:0;">
+            Please read this first. An item goes to <b>Sorting</b> if it has <b>any contamination</b> OR <b>any disruptors</b>.
+            If it has neither, it goes to <b>No Sorting</b>.
+          </p>
+
+          <div class="defRow">
+            <div class="defCard">
+              <h3>Disruptors</h3>
+              <p style="margin-top:0;">Any item with <b>buttons</b>, <b>zips</b>, or <b>non-textile attachments</b>.</p>
+              <ul>
+                <li>Buttons, zips</li>
+                <li>Studs, rivets, snaps, eyelets</li>
+                <li>Non-textile attachments (plastic/metal parts)</li>
+              </ul>
+            </div>
+
+            <div class="defArt" aria-label="Cartoon examples of disruptors">
+              <div style="
+                display:grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                width: 100%;
+                max-width: 220px;
+              ">
+                <div style="text-align:center;">
+                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                    <circle cx="60" cy="60" r="30" fill="#ffe8b8" stroke="#b0892f" stroke-width="4"/>
+                    <circle cx="52" cy="52" r="4" fill="#b0892f"/>
+                    <circle cx="68" cy="52" r="4" fill="#b0892f"/>
+                    <circle cx="52" cy="68" r="4" fill="#b0892f"/>
+                    <circle cx="68" cy="68" r="4" fill="#b0892f"/>
+                  </svg>
+                  <div style="font-size:11px; color:#555; margin-top:2px;">Button</div>
+                </div>
+
+                <div style="text-align:center;">
+                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                    <rect x="58" y="20" width="4" height="80" rx="2" fill="#2f2f2f" opacity="0.75"/>
+                    <rect x="46" y="44" width="28" height="20" rx="6" fill="#ffd7a8" stroke="#b07b3a" stroke-width="3"/>
+                    <rect x="54" y="48" width="12" height="8" rx="3" fill="#ffffff" opacity="0.7"/>
+                  </svg>
+                  <div style="font-size:11px; color:#555; margin-top:2px;">Zip</div>
+                </div>
+
+                <div style="text-align:center;">
+                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
+                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
+                    <circle cx="60" cy="60" r="30" fill="#d7e7ff" stroke="#5a78b8" stroke-width="4"/>
+                    <circle cx="60" cy="60" r="13" fill="#ffffff" stroke="#5a78b8" stroke-width="4"/>
+                  </svg>
+                  <div style="font-size:11px; color:#555; margin-top:2px;">Eyelet</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="defRow">
+            <div class="defCard">
+              <h3>Contamination</h3>
+              <p style="margin-top:0;">Items with <b>moisture</b>, <b>oil</b>, or a <b>large stain</b>. (No harmful substances used.)</p>
+              <ul>
+                <li>Wet/damp fabric</li>
+                <li>Oil / grease marks</li>
+                <li>Large food/soil stain</li>
+              </ul>
+            </div>
+
+            <div class="defArt" aria-label="Cartoon examples of contamination">
+              <svg viewBox="0 0 220 220" role="img" aria-label="Trousers with water droplets, oil droplet and stain">
+                <rect x="0" y="0" width="220" height="220" rx="18" fill="#ffffff"/>
+                <path d="M72 40 H148 L158 190 H126 L116 112 L104 112 L94 190 H62 Z"
+                      fill="#e7e7ef" stroke="#6b6b7a" stroke-width="3"/>
+                <path d="M124 130 C148 120 158 142 142 158 C156 164 142 182 124 176 C118 190 96 178 104 162 C88 156 92 134 110 140 C112 128 120 124 124 130 Z"
+                      fill="#c78d5f" opacity="0.85" stroke="#8a5a35" stroke-width="2"/>
+                <path d="M52 82 C52 72 60 62 60 54 C60 62 68 72 68 82 C68 92 61 100 60 100 C59 100 52 92 52 82 Z"
+                      fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
+                <path d="M36 116 C36 108 43 100 43 92 C43 100 50 108 50 116 C50 124 44 132 43 132 C42 132 36 124 36 116 Z"
+                      fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
+                <path d="M178 108 C178 98 188 86 188 78 C188 86 198 98 198 108 C198 120 190 130 188 130 C186 130 178 120 178 108 Z"
+                      fill="#ffd38a" stroke="#b07b3a" stroke-width="2"/>
+                <text x="16" y="206" font-size="12" fill="#666">water • oil • stain</text>
+              </svg>
+            </div>
+          </div>
+
+          <h3 style="margin-top:14px;">How to use this simulation</h3>
+          <p style="margin-top:0;">When the trial starts, you will see two bins. Click the correct one.</p>
+
+          <div class="demoRow">
+            <div class="demoBin">
+              <div class="demoVisual red">
+                <div class="lid"></div>
+                <div class="slot"></div>
+                <div class="demoLabel">SORTING<br/>DISRUPTORS / CONTAMINATION</div>
+              </div>
+              <div class="demoSub">Click the <b>red</b> bin if there are <b>any disruptors</b> or <b>any contamination</b>.</div>
+            </div>
+
+            <div class="demoBin">
+              <div class="demoVisual blue">
+                <div class="lid"></div>
+                <div class="slot"></div>
+                <div class="demoLabel">NO SORTING<br/>CLEAR</div>
+              </div>
+              <div class="demoSub">Click the <b>blue</b> bin if the item is <b>clear</b> (no disruptors, no contamination).</div>
+            </div>
+          </div>
+
+          <!-- checkbox stays at the bottom -->
+          <div class="checkline">
+            <input id="confirmRead" type="checkbox" />
+            <div class="txt">
+              <b>I have read and understood the definitions and instructions above.</b><br/>
+              (Tick this to begin.)
+            </div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:16px;">Trial setup</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <label for="setSelect">Select item set</label>
+            <select id="setSelect">
+              <option value="A">Set A (items 1–10)</option>
+              <option value="B">Set B (items 11–20)</option>
+              <option value="C">Set C (items 21–30)</option>
+              <option value="D">Set D (items 31–40)</option>
+            </select>
+          </div>
+          <div>
+            <label>Trial length</label>
+            <div class="pill">Fixed: 10 items</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="btnStartTrial" class="primary" disabled>Start Trial</button>
+          <button id="btnResetAll">Reset everything</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN TRIAL -->
+  <div id="trialFull" class="fullscreen hidden">
+    <div class="fsTop">
+      <div class="left">
+        <span class="pill">Mode: Manual</span>
+        <span class="pill">Participant: <b id="participantId_trial">1</b></span>
+        <span class="pill">Set: <b id="setLabel_trial">A</b></span>
+        <span class="pill">Trial timer: <b id="trialTimer">0.00</b> s</span>
+        <span class="pill">Item timer: <b id="itemTimer">0.00</b> s</span>
+        <span class="currentItemPill">Current item: <b>Item <span id="currentItemNumber">1</span></b> &nbsp;|&nbsp; Progress: <b><span id="progressText">0</span>/10</b></span>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button id="btnStartItem" class="primary">Start Item</button>
+        <button id="btnAbort">Abort</button>
+      </div>
+    </div>
+
+    <div class="fsMain">
+      <div id="binSorting" class="bigBin bgRed disabled" aria-label="Sorting bin">
+        <div class="bigBinTop"><div class="bigBinSlot"></div></div>
+        <div class="bigBinBody">
+          <div class="bigBinText">SORTING<br/>DISRUPTORS / CONTAMINATION</div>
+        </div>
+        <div class="bigBinFooter">Click if the item has <b>any disruptors</b> or <b>any contamination</b>.</div>
+      </div>
+
+      <div id="binNoSorting" class="bigBin bgBlue disabled" aria-label="No Sorting bin">
+        <div class="bigBinTop"><div class="bigBinSlot"></div></div>
+        <div class="bigBinBody">
+          <div class="bigBinText">NO SORTING<br/>CLEAR</div>
+        </div>
+        <div class="bigBinFooter">Click if the item is <b>clear</b> (no disruptors, no contamination).</div>
+      </div>
+    </div>
+
+    <div class="fsBottom">
+      <div class="pill" id="hint">Click “Start Item” to begin timing, then click a bin.</div>
+      <button id="btnNextItem" class="primary" disabled>Next Item</button>
+    </div>
+  </div>
+
+  <!-- FINISH -->
+  <div id="finishWrap" class="wrap hidden">
+    <div class="card">
+      <div class="topbar">
+        <div class="left">
+          <span class="pill">Mode: Manual</span>
+          <span class="pill">Participant: <b id="finishPid">1</b></span>
+          <span class="pill">Set: <b id="finishSet">A</b></span>
+        </div>
+      </div>
+
+      <h1>Trial finished</h1>
+      <p>
+        Participant <b id="finishPid2">1</b> completed 10 items in
+        <b id="finishTime">0.00</b> seconds.
+      </p>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button id="btnDownloadCsv" class="primary">Download CSV</button>
+        <button id="btnNewParticipant">New participant</button>
+      </div>
+
+      <p style="margin-top:10px;">CSV includes: chosen bin, ground truth, correct (1/0), item time, total time.</p>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Same 40 items / same GTs as guided (EDIT LATER)
+    // -----------------------------
+    function makeItem(i, gtContam, gtDisrupt, tags=[]) {
+      const gtSorting = !!(gtContam || gtDisrupt);
+      const gtReason = gtContam && gtDisrupt ? "BOTH" : gtContam ? "CONTAMINATION" : gtDisrupt ? "DISRUPTOR" : "CLEAR";
+      return { item_id: i, tags, gt_contamination: !!gtContam, gt_disruptor: !!gtDisrupt, gt_sorting: gtSorting, gt_reason: gtReason };
+    }
+
+    const ITEMS = new Map([
+      makeItem(1,true,false,["stain"]), makeItem(2,false,false,["clear"]), makeItem(3,false,true,["metal_zip"]),
+      makeItem(4,true,true,["wet","metal"]), makeItem(5,false,false,["clear"]), makeItem(6,true,false,["food"]),
+      makeItem(7,false,true,["studs"]), makeItem(8,false,false,["clear"]), makeItem(9,true,false,["oil"]),
+      makeItem(10,false,true,["zip"]), makeItem(11,false,false,["clear"]), makeItem(12,true,false,["mud"]),
+      makeItem(13,false,true,["buttons"]), makeItem(14,false,false,["clear"]), makeItem(15,true,false,["paint"]),
+      makeItem(16,false,false,["clear"]), makeItem(17,false,true,["hardware"]), makeItem(18,false,false,["clear"]),
+      makeItem(19,true,true,["wet","electronics_sim"]), makeItem(20,false,false,["clear"]), makeItem(21,false,true,["metal"]),
+      makeItem(22,true,false,["unknown_stain"]), makeItem(23,false,false,["clear"]), makeItem(24,false,true,["zip"]),
+      makeItem(25,true,false,["odour_sim"]), makeItem(26,false,false,["clear"]), makeItem(27,false,true,["rivets"]),
+      makeItem(28,false,false,["clear"]), makeItem(29,true,false,["wet"]), makeItem(30,false,true,["metal_zip"]),
+      makeItem(31,false,false,["clear"]), makeItem(32,true,true,["wet","metal"]), makeItem(33,false,false,["clear"]),
+      makeItem(34,false,true,["studs"]), makeItem(35,true,false,["food"]), makeItem(36,false,false,["clear"]),
+      makeItem(37,false,true,["buttons"]), makeItem(38,true,false,["oil"]), makeItem(39,false,false,["clear"]),
+      makeItem(40,true,true,["electronics_sim","wet"])
+    ].map(x => [x.item_id, x]));
+
+    // Participant numbering (auto)
+    const PID_KEY = "triage_pid_counter_manual";
+    function getPid() {
+      const v = Number(localStorage.getItem(PID_KEY) || "1");
+      return Number.isFinite(v) && v >= 1 ? v : 1;
+    }
+    function setPid(v) { localStorage.setItem(PID_KEY, String(v)); }
+
+    // Sets
+    const SETS = {
+      A: { label: "A", min: 1,  max: 10 },
+      B: { label: "B", min: 11, max: 20 },
+      C: { label: "C", min: 21, max: 30 },
+      D: { label: "D", min: 31, max: 40 }
+    };
+
+    const state = {
+      pid: getPid(),
+      setId: "A",
+      trialStarted: false,
+      trialStartPerf: 0,
+      itemRunning: false,
+      itemStartPerf: 0,
+      currentItem: 1,
+      chosenDecision: null,
+      rows: [],
+      trialTimerRAF: null,
+      itemTimerRAF: null
+    };
+
+    // Elements (setup)
+    const participantId_setup = document.getElementById("participantId_setup");
+    const setLabel_setup = document.getElementById("setLabel_setup");
+    const setSelect = document.getElementById("setSelect");
+    const confirmRead = document.getElementById("confirmRead");
+    const btnStartTrial = document.getElementById("btnStartTrial");
+    const btnResetAll = document.getElementById("btnResetAll");
+    const setupWrap = document.getElementById("setupWrap");
+
+    // Trial fullscreen
+    const trialFull = document.getElementById("trialFull");
+    const participantId_trial = document.getElementById("participantId_trial");
+    const setLabel_trial = document.getElementById("setLabel_trial");
+    const trialTimerEl = document.getElementById("trialTimer");
+    const itemTimerEl = document.getElementById("itemTimer");
+    const currentItemNumberEl = document.getElementById("currentItemNumber");
+    const progressText = document.getElementById("progressText");
+    const btnStartItem = document.getElementById("btnStartItem");
+    const btnAbort = document.getElementById("btnAbort");
+    const binSorting = document.getElementById("binSorting");
+    const binNoSorting = document.getElementById("binNoSorting");
+    const btnNextItem = document.getElementById("btnNextItem");
+    const hint = document.getElementById("hint");
+
+    // Finish
+    const finishWrap = document.getElementById("finishWrap");
+    const finishPid = document.getElementById("finishPid");
+    const finishPid2 = document.getElementById("finishPid2");
+    const finishSet = document.getElementById("finishSet");
+    const finishTime = document.getElementById("finishTime");
+    const btnDownloadCsv = document.getElementById("btnDownloadCsv");
+    const btnNewParticipant = document.getElementById("btnNewParticipant");
+
+    function renderSetupHeader(){
+      participantId_setup.textContent = state.pid;
+      setLabel_setup.textContent = state.setId;
+    }
+    function renderTrialHeader(){
+      participantId_trial.textContent = state.pid;
+      setLabel_trial.textContent = state.setId;
+    }
+    function renderCurrentItem(){
+      currentItemNumberEl.textContent = String(state.currentItem);
+      progressText.textContent = String(state.rows.length);
+    }
+
+    function setBinsEnabled(enabled){
+      binSorting.classList.toggle("disabled", !enabled);
+      binNoSorting.classList.toggle("disabled", !enabled);
+    }
+    function clearSelection(){
+      binSorting.classList.remove("selected");
+      binNoSorting.classList.remove("selected");
+      state.chosenDecision = null;
+      btnNextItem.disabled = true;
+    }
+    function setHint(msg){ hint.textContent = msg; }
+
+    // Timers
+    function startTrialTimer() {
+      const tick = () => {
+        if (!state.trialStarted) return;
+        const s = (performance.now() - state.trialStartPerf) / 1000;
+        trialTimerEl.textContent = s.toFixed(2);
+        state.trialTimerRAF = requestAnimationFrame(tick);
+      };
+      state.trialTimerRAF = requestAnimationFrame(tick);
+    }
+    function startItemTimer() {
+      const tick = () => {
+        if (!state.itemRunning) return;
+        const s = (performance.now() - state.itemStartPerf) / 1000;
+        itemTimerEl.textContent = s.toFixed(2);
+        state.itemTimerRAF = requestAnimationFrame(tick);
+      };
+      state.itemTimerRAF = requestAnimationFrame(tick);
+    }
+    function stopItemTimerAndGetSeconds() {
+      state.itemRunning = false;
+      if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
+      const s = (performance.now() - state.itemStartPerf) / 1000;
+      itemTimerEl.textContent = s.toFixed(2);
+      return s;
+    }
+    function stopTrialTimerAndGetSeconds() {
+      state.trialStarted = false;
+      if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
+      const s = (performance.now() - state.trialStartPerf) / 1000;
+      trialTimerEl.textContent = s.toFixed(2);
+      return s;
+    }
+
+    // CSV
+    function toCsv(rows) {
+      const headers = [
+        "timestamp_iso",
+        "participant_id",
+        "set_id",
+        "trial_index",
+        "item_number",
+        "choice",
+        "gt_decision",
+        "gt_contamination",
+        "gt_disruptor",
+        "gt_reason",
+        "correct",
+        "item_seconds",
+        "trial_seconds_total"
+      ];
+      const escape = (v) => {
+        const s = String(v ?? "");
+        if (s.includes('"') || s.includes(",") || s.includes("\n")) return '"' + s.replaceAll('"', '""') + '"';
+        return s;
+      };
+      const lines = [headers.join(",")];
+      for (const r of rows) lines.push(headers.map(h => escape(r[h])).join(","));
+      return lines.join("\n");
+    }
+    function downloadCsv(filename, csvText) {
+      const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Setup logic
+    confirmRead.addEventListener("change", () => {
+      btnStartTrial.disabled = !confirmRead.checked;
+    });
+    setSelect.addEventListener("change", () => {
+      state.setId = setSelect.value;
+      renderSetupHeader();
+    });
+
+    btnResetAll.addEventListener("click", () => {
+      if (!confirm("Reset participant counter and clear current trial state?")) return;
+      setPid(1);
+      state.pid = 1;
+      state.setId = "A";
+      setSelect.value = "A";
+      confirmRead.checked = false;
+      btnStartTrial.disabled = true;
+
+      state.rows = [];
+      renderSetupHeader();
+    });
+
+    btnStartTrial.addEventListener("click", () => {
+      const set = SETS[state.setId];
+      state.currentItem = set.min;
+      state.rows = [];
+
+      // start trial timer
+      state.trialStarted = true;
+      state.trialStartPerf = performance.now();
+      trialTimerEl.textContent = "0.00";
+      itemTimerEl.textContent = "0.00";
+
+      // switch screens
+      setupWrap.classList.add("hidden");
+      finishWrap.classList.add("hidden");
+      trialFull.classList.remove("hidden");
+
+      // reset trial UI
+      renderTrialHeader();
+      renderCurrentItem();
+      clearSelection();
+      setBinsEnabled(false);
+      btnStartItem.disabled = false;
+      btnNextItem.disabled = true;
+      setHint("Click “Start Item” to begin timing, then click a bin.");
+
+      startTrialTimer();
+    });
+
+    function pickChoice(choice){
+      if (binSorting.classList.contains("disabled")) return;
+      state.chosenDecision = choice;
+      binSorting.classList.toggle("selected", choice === "SORTING");
+      binNoSorting.classList.toggle("selected", choice === "NO_SORTING");
+      btnNextItem.disabled = false;
+    }
+    binSorting.addEventListener("click", () => pickChoice("SORTING"));
+    binNoSorting.addEventListener("click", () => pickChoice("NO_SORTING"));
+
+    btnStartItem.addEventListener("click", () => {
+      state.itemRunning = true;
+      state.itemStartPerf = performance.now();
+      startItemTimer();
+
+      btnStartItem.disabled = true;
+      setBinsEnabled(true);
+      clearSelection();
+      setHint("Click the correct bin now.");
+    });
+
+    btnNextItem.addEventListener("click", () => {
+      const itemSeconds = stopItemTimerAndGetSeconds();
+      const trialIndex = state.rows.length + 1;
+
+      const itemNo = state.currentItem;
+      const gt = ITEMS.get(itemNo);
+      const gtDecision = gt.gt_sorting ? "SORTING" : "NO SORTING";
+      const choice = (state.chosenDecision === "SORTING") ? "SORTING" : "NO SORTING";
+      const correct = (gtDecision === choice) ? 1 : 0;
+
+      state.rows.push({
+        timestamp_iso: new Date().toISOString(),
+        participant_id: state.pid,
+        set_id: state.setId,
+        trial_index: trialIndex,
+        item_number: itemNo,
+        choice: choice,
+        gt_decision: gtDecision,
+        gt_contamination: gt.gt_contamination ? "YES" : "NO",
+        gt_disruptor: gt.gt_disruptor ? "YES" : "NO",
+        gt_reason: gt.gt_reason,
+        correct: correct,
+        item_seconds: itemSeconds.toFixed(4),
+        trial_seconds_total: ""
+      });
+
+      // advance item
+      state.currentItem += 1;
+      renderCurrentItem();
+
+      // finish after 10
+      if (state.rows.length >= 10) {
+        const total = stopTrialTimerAndGetSeconds();
+        state.rows = state.rows.map(r => ({ ...r, trial_seconds_total: total.toFixed(4) }));
+
+        // show finish screen
+        trialFull.classList.add("hidden");
+        finishWrap.classList.remove("hidden");
+        finishPid.textContent = state.pid;
+        finishPid2.textContent = state.pid;
+        finishSet.textContent = state.setId;
+        finishTime.textContent = total.toFixed(2);
+        return;
+      }
+
+      // reset for next item
+      btnStartItem.disabled = false;
+      setBinsEnabled(false);
+      clearSelection();
+      btnNextItem.disabled = true;
+      setHint("Next item: click “Start Item”, then click a bin.");
+    });
+
+    btnAbort.addEventListener("click", () => {
+      if (!confirm("Abort this trial?")) return;
+      // stop timers
+      if (state.itemRunning) {
+        state.itemRunning = false;
+        if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
+      }
+      if (state.trialStarted) {
+        state.trialStarted = false;
+        if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
+      }
+      // go back to setup
+      trialFull.classList.add("hidden");
+      finishWrap.classList.add("hidden");
+      setupWrap.classList.remove("hidden");
+      setHint("Click “Start Item” to begin timing, then click a bin.");
+    });
+
+    btnDownloadCsv.addEventListener("click", () => {
+      const ts = new Date().toISOString().slice(0,19).replaceAll(":", "-");
+      const filename = `manual_participant_${state.pid}_set${state.setId}_${ts}.csv`;
+      downloadCsv(filename, toCsv(state.rows));
+    });
+
+    btnNewParticipant.addEventListener("click", () => {
+      const next = state.pid + 1;
+      state.pid = next;
+      setPid(next);
+
+      // reset checkbox + button
+      confirmRead.checked = false;
+      btnStartTrial.disabled = true;
+
+      // back to setup
+      finishWrap.classList.add("hidden");
+      trialFull.classList.add("hidden");
+      setupWrap.classList.remove("hidden");
+      renderSetupHeader();
+    });
+
+    // Init
+    state.pid = getPid();
+    renderSetupHeader();
+  </script>
+</body>
 </html>
