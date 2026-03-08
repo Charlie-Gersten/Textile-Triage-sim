@@ -7,230 +7,493 @@
   <style>
     :root{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --bg:#f6f6f6; --card:#fff; --text:#111; --muted:#555;
-      --border:#e6e6e6; --shadow: 0 2px 14px rgba(0,0,0,.06);
-      --red:#ffd0d0; --blue:#bfe8ff;
+      --bg:#f6f6f6;
+      --card:#fff;
+      --text:#111;
+      --muted:#555;
+      --border:#e6e6e6;
+      --shadow:0 2px 14px rgba(0,0,0,.06);
+      --red:#ffd0d0;
+      --blue:#bfe8ff;
     }
-    body{ margin:0; background:var(--bg); color:var(--text); }
-    .wrap{ max-width: 980px; margin: 0 auto; padding: 20px; }
-    .card{ background:var(--card); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
-    h1{ margin:0 0 8px; font-size: 22px; }
-    h2{ margin: 16px 0 8px; font-size: 18px; }
-    h3{ margin: 12px 0 6px; font-size: 15px; }
-    p{ margin: 8px 0; color: var(--muted); line-height: 1.45; }
-    ul{ margin: 8px 0 8px 18px; color: var(--muted); }
-    li{ margin: 4px 0; }
 
-    label{ font-size: 13px; color: var(--muted); display:block; margin-bottom: 6px; }
-    select, button { font: inherit; }
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    h1{ margin:0 0 8px; font-size:22px; }
+    h2{ margin:16px 0 8px; font-size:18px; }
+    h3{ margin:12px 0 6px; font-size:15px; }
+
+    p{
+      margin:8px 0;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    ul{
+      margin:8px 0 8px 18px;
+      color:var(--muted);
+    }
+
+    li{ margin:4px 0; }
+
+    label{
+      font-size:13px;
+      color:var(--muted);
+      display:block;
+      margin-bottom:6px;
+    }
+
+    select, button{
+      font:inherit;
+    }
+
     select{
-      width:100%; padding: 10px 12px; border-radius: 12px; border: 1px solid #ccc; background:#fff;
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #ccc;
+      background:#fff;
     }
+
     button{
-      padding: 10px 12px; border-radius: 12px; border: 1px solid #bbb; background:#fff; cursor:pointer;
-    }
-    button.primary{ background:#111; color:#fff; border-color:#111; }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
-
-    .pill{ display:inline-block; padding: 4px 10px; border-radius: 999px; background:#eee; font-size: 12px; margin-right: 8px; }
-    .topbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .topbar .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-
-    .panel{ border: 1px solid var(--border); border-radius: 16px; padding: 14px; background:#fafafa; }
-
-    .definitions{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #bbb;
       background:#fff;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
+      cursor:pointer;
     }
-    .defRow{
-      display:grid;
-      grid-template-columns: 1fr 260px;
-      gap: 14px;
-      align-items: start;
-      margin-top: 10px;
+
+    button.primary{
+      background:#111;
+      color:#fff;
+      border-color:#111;
     }
-    @media (max-width: 860px){
-      .defRow{ grid-template-columns: 1fr; }
+
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
     }
-    .defCard{
-      border: 1px solid var(--border);
-      background:#fafafa;
-      border-radius: 14px;
-      padding: 12px;
+
+    .bigBtn{
+      padding:14px 22px;
+      font-size:18px;
+      font-weight:800;
+      border-radius:18px;
+      min-width:150px;
     }
-    .defArt{
-      border: 1px solid var(--border);
-      background:#fff;
-      border-radius: 14px;
-      padding: 10px;
+
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#eee;
+      font-size:12px;
+      margin-right:8px;
+    }
+
+    .topbar{
       display:flex;
-      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .topbar .left{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
     }
 
-    .checkline{
-      display:flex; gap:10px; align-items:flex-start;
-      margin-top: 12px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background:#fff;
+    .panel{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      background:#fafafa;
     }
-    .checkline input{ margin-top: 4px; }
-    .checkline .txt{ color: var(--muted); font-size: 13px; line-height: 1.35; }
 
-    .hidden{ display:none !important; }
+    .definitions{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
 
-    /* Demo bins on briefing page */
-    .demoRow{
-      margin-top: 12px;
+    .defRow{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns:minmax(0, 1fr) 430px;
+      gap:14px;
+      align-items:stretch;
+      margin-top:10px;
     }
-    @media (max-width: 860px){ .demoRow{ grid-template-columns:1fr; } }
-    .demoBin{
-      border-radius: 16px;
-      border: 2px solid rgba(0,0,0,.10);
+
+    @media (max-width: 980px){
+      .defRow{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .defCard{
+      border:1px solid var(--border);
+      background:#fafafa;
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .defArt{
+      border:1px solid var(--border);
       background:#fff;
-      padding: 12px;
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:220px;
     }
+
+    .realImageRow{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      width:100%;
+    }
+
+    .realImageCard{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
+
+    .realImageCard img{
+      width:100%;
+      height:170px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #d8d8d8;
+      background:#fff;
+    }
+
+    .realImageCard span{
+      font-size:13px;
+      color:#555;
+      text-align:center;
+      font-weight:700;
+    }
+
+    .realImageDouble{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      align-items:center;
+    }
+
+    .realImageDouble img{
+      width:100%;
+      height:230px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #d8d8d8;
+      background:#fff;
+    }
+
+    .instructionBox{
+      margin-top:12px;
+      border:1px solid var(--border);
+      background:#fafafa;
+      border-radius:14px;
+      padding:14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:16px;
+      align-items:center;
+    }
+
+    @media (max-width: 900px){
+      .instructionBox{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .instructionText h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+
+    .instructionText p{
+      margin:6px 0;
+    }
+
+    .instructionButtonsDemo{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .demoActionBtn{
+      opacity:1 !important;
+      cursor:default !important;
+      pointer-events:none;
+    }
+
+    .demoRow{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width: 860px){
+      .demoRow{ grid-template-columns:1fr; }
+    }
+
+    .demoBin{
+      border-radius:16px;
+      border:2px solid rgba(0,0,0,.10);
+      background:#fff;
+      padding:12px;
+    }
+
     .demoVisual{
-      height: 160px;
-      border-radius: 16px;
-      border: 2px solid rgba(0,0,0,.08);
+      height:160px;
+      border-radius:16px;
+      border:2px solid rgba(0,0,0,.08);
       position:relative;
       overflow:hidden;
       display:flex;
       align-items:flex-end;
       justify-content:center;
     }
-    .demoVisual .lid{ position:absolute; top:0; left:0; right:0; height: 46px; background: rgba(0,0,0,.10); }
-    .demoVisual .slot{ position:absolute; top: 64px; width: 70%; height: 10px; border-radius: 999px; background: rgba(0,0,0,.25); }
-    .demoLabel{
-      width: 88%;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(0,0,0,.10);
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 12px;
-      text-align:center;
-      font-weight: 950;
-      letter-spacing: .2px;
-    }
-    .demoSub{ text-align:center; color: var(--muted); margin-top: 10px; font-size: 13px; }
-    .red{ background: var(--red); }
-    .blue{ background: var(--blue); }
 
-    /* Fullscreen TRIAL page */
-    .fullscreen{
-      width: 100vw;
-      height: 100vh;
-      padding: 18px;
-      box-sizing: border-box;
-      background: var(--bg);
-      display:flex;
-      flex-direction: column;
-      gap: 12px;
+    .demoVisual .lid{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:46px;
+      background:rgba(0,0,0,.10);
     }
+
+    .demoVisual .slot{
+      position:absolute;
+      top:64px;
+      width:70%;
+      height:10px;
+      border-radius:999px;
+      background:rgba(0,0,0,.25);
+    }
+
+    .demoLabel{
+      width:88%;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:12px;
+      padding:10px;
+      margin-bottom:12px;
+      text-align:center;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+
+    .demoSub{
+      text-align:center;
+      color:var(--muted);
+      margin-top:10px;
+      font-size:13px;
+    }
+
+    .red{ background:var(--red); }
+    .blue{ background:var(--blue); }
+
+    .checkline{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:12px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .checkline input{ margin-top:4px; }
+
+    .checkline .txt{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .hidden{ display:none !important; }
+
+    .fullscreen{
+      width:100vw;
+      min-height:100vh;
+      padding:18px;
+      box-sizing:border-box;
+      background:var(--bg);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
     .fsTop{
       display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
-      justify-content: space-between;
+      justify-content:space-between;
     }
-    .fsTop .left{ display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
+
+    .fsTop .left{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
 
     .fsMain{
-      flex: 1;
+      flex:1;
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      align-items: stretch;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      align-items:stretch;
     }
-    @media (max-width: 860px){ .fsMain{ grid-template-columns: 1fr; } }
+
+    @media (max-width: 860px){
+      .fsMain{ grid-template-columns:1fr; }
+    }
 
     .bigBin{
-      border-radius: 26px;
-      border: 3px solid rgba(0,0,0,.10);
+      border-radius:26px;
+      border:3px solid rgba(0,0,0,.10);
       overflow:hidden;
       cursor:pointer;
       user-select:none;
       display:flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+      flex-direction:column;
+      justify-content:space-between;
+      transition:transform .08s ease, box-shadow .18s ease, border-color .18s ease;
       background:#fff;
-      min-height: 360px;
+      min-height:360px;
     }
-    .bigBin:hover{ box-shadow: 0 14px 40px rgba(0,0,0,.12); transform: translateY(-2px); }
-    .bigBin:active{ transform: translateY(0px) scale(0.995); }
-    .bigBin.disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; transform:none; }
-    .bigBin.selected{ border-color:#111; box-shadow: 0 16px 44px rgba(0,0,0,.14); }
+
+    .bigBin:hover{
+      box-shadow:0 14px 40px rgba(0,0,0,.12);
+      transform:translateY(-2px);
+    }
+
+    .bigBin:active{
+      transform:translateY(0px) scale(0.995);
+    }
+
+    .bigBin.disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+
+    .bigBin.selected{
+      border-color:#111;
+      box-shadow:0 16px 44px rgba(0,0,0,.14);
+    }
 
     .bigBinTop{
-      height: 88px;
-      background: rgba(0,0,0,.10);
-      position: relative;
+      height:88px;
+      background:rgba(0,0,0,.10);
+      position:relative;
     }
+
     .bigBinSlot{
       position:absolute;
-      left: 15%;
-      right: 15%;
-      top: 52px;
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.28);
+      left:15%;
+      right:15%;
+      top:52px;
+      height:14px;
+      border-radius:999px;
+      background:rgba(0,0,0,.28);
     }
+
     .bigBinBody{
-      flex: 1;
+      flex:1;
       display:flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
       text-align:center;
     }
+
     .bigBinText{
-      font-weight: 1000;
-      font-size: clamp(22px, 3.2vw, 44px);
-      letter-spacing: 0.4px;
-      line-height: 1.05;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(0,0,0,.12);
-      border-radius: 18px;
-      padding: 18px 16px;
-      width: 86%;
+      font-weight:1000;
+      font-size:clamp(22px, 3.2vw, 44px);
+      letter-spacing:0.4px;
+      line-height:1.05;
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:18px;
+      padding:18px 16px;
+      width:86%;
     }
+
     .bigBinFooter{
-      padding: 14px 16px;
+      padding:14px 16px;
       text-align:center;
-      font-size: 14px;
-      color: rgba(0,0,0,.70);
-      background: rgba(255,255,255,.35);
-      border-top: 1px solid rgba(0,0,0,.08);
+      font-size:14px;
+      color:rgba(0,0,0,.70);
+      background:rgba(255,255,255,.35);
+      border-top:1px solid rgba(0,0,0,.08);
     }
-    .bgRed{ background: var(--red); }
-    .bgBlue{ background: var(--blue); }
+
+    .bgRed{ background:var(--red); }
+    .bgBlue{ background:var(--blue); }
 
     .fsBottom{
       display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
-      justify-content: space-between;
+      justify-content:space-between;
     }
 
     .currentItemPill{
       display:inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
+      padding:6px 12px;
+      border-radius:999px;
       background:#fff;
-      border: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--muted);
+      border:1px solid var(--border);
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .trialButtons{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
   </style>
 </head>
@@ -270,43 +533,19 @@
               </ul>
             </div>
 
-            <div class="defArt" aria-label="Cartoon examples of disruptors">
-              <div style="
-                display:grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-                width: 100%;
-                max-width: 220px;
-              ">
-                <div style="text-align:center;">
-                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
-                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
-                    <circle cx="60" cy="60" r="30" fill="#ffe8b8" stroke="#b0892f" stroke-width="4"/>
-                    <circle cx="52" cy="52" r="4" fill="#b0892f"/>
-                    <circle cx="68" cy="52" r="4" fill="#b0892f"/>
-                    <circle cx="52" cy="68" r="4" fill="#b0892f"/>
-                    <circle cx="68" cy="68" r="4" fill="#b0892f"/>
-                  </svg>
-                  <div style="font-size:11px; color:#555; margin-top:2px;">Button</div>
+            <div class="defArt" aria-label="Real examples of disruptors">
+              <div class="realImageRow">
+                <div class="realImageCard">
+                  <img src="button.png" alt="Button example">
+                  <span>Button</span>
                 </div>
-
-                <div style="text-align:center;">
-                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
-                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
-                    <rect x="58" y="20" width="4" height="80" rx="2" fill="#2f2f2f" opacity="0.75"/>
-                    <rect x="46" y="44" width="28" height="20" rx="6" fill="#ffd7a8" stroke="#b07b3a" stroke-width="3"/>
-                    <rect x="54" y="48" width="12" height="8" rx="3" fill="#ffffff" opacity="0.7"/>
-                  </svg>
-                  <div style="font-size:11px; color:#555; margin-top:2px;">Zip</div>
+                <div class="realImageCard">
+                  <img src="zip.png" alt="Zip example">
+                  <span>Zip</span>
                 </div>
-
-                <div style="text-align:center;">
-                  <svg viewBox="0 0 120 120" style="width:100%; max-width:70px;">
-                    <rect x="10" y="10" width="100" height="100" rx="16" fill="#ffffff" stroke="#e6e6e6" stroke-width="3"/>
-                    <circle cx="60" cy="60" r="30" fill="#d7e7ff" stroke="#5a78b8" stroke-width="4"/>
-                    <circle cx="60" cy="60" r="13" fill="#ffffff" stroke="#5a78b8" stroke-width="4"/>
-                  </svg>
-                  <div style="font-size:11px; color:#555; margin-top:2px;">Eyelet</div>
+                <div class="realImageCard">
+                  <img src="eyelet.png" alt="Eyelet example">
+                  <span>Eyelet</span>
                 </div>
               </div>
             </div>
@@ -323,21 +562,24 @@
               </ul>
             </div>
 
-            <div class="defArt" aria-label="Cartoon examples of contamination">
-              <svg viewBox="0 0 220 220" role="img" aria-label="Trousers with water droplets, oil droplet and stain">
-                <rect x="0" y="0" width="220" height="220" rx="18" fill="#ffffff"/>
-                <path d="M72 40 H148 L158 190 H126 L116 112 L104 112 L94 190 H62 Z"
-                      fill="#e7e7ef" stroke="#6b6b7a" stroke-width="3"/>
-                <path d="M124 130 C148 120 158 142 142 158 C156 164 142 182 124 176 C118 190 96 178 104 162 C88 156 92 134 110 140 C112 128 120 124 124 130 Z"
-                      fill="#c78d5f" opacity="0.85" stroke="#8a5a35" stroke-width="2"/>
-                <path d="M52 82 C52 72 60 62 60 54 C60 62 68 72 68 82 C68 92 61 100 60 100 C59 100 52 92 52 82 Z"
-                      fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
-                <path d="M36 116 C36 108 43 100 43 92 C43 100 50 108 50 116 C50 124 44 132 43 132 C42 132 36 124 36 116 Z"
-                      fill="#bfe8ff" stroke="#2a7aa6" stroke-width="2"/>
-                <path d="M178 108 C178 98 188 86 188 78 C188 86 198 98 198 108 C198 120 190 130 188 130 C186 130 178 120 178 108 Z"
-                      fill="#ffd38a" stroke="#b07b3a" stroke-width="2"/>
-                <text x="16" y="206" font-size="12" fill="#666">water • oil • stain</text>
-              </svg>
+            <div class="defArt" aria-label="Real examples of contamination">
+              <div class="realImageDouble">
+                <img src="stain-shirt.png" alt="Stained shirt example">
+                <img src="stain-jeans.png" alt="Stained jeans example">
+              </div>
+            </div>
+          </div>
+
+          <div class="instructionBox">
+            <div class="instructionText">
+              <h3>How to move through the trial</h3>
+              <p>Before each item, press <b>Start Item</b> to begin that item.</p>
+              <p>After selecting a bin, press <b>Next Item</b> to save the response and move to the next garment.</p>
+            </div>
+
+            <div class="instructionButtonsDemo" aria-label="Example start and next item buttons">
+              <button type="button" class="primary bigBtn demoActionBtn" disabled>Start Item</button>
+              <button type="button" class="primary bigBtn demoActionBtn" disabled>Next Item</button>
             </div>
           </div>
 
@@ -364,7 +606,6 @@
             </div>
           </div>
 
-          <!-- checkbox stays at the bottom -->
           <div class="checkline">
             <input id="confirmRead" type="checkbox" />
             <div class="txt">
@@ -392,7 +633,7 @@
         </div>
 
         <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button id="btnStartTrial" class="primary" disabled>Start Trial</button>
+          <button id="btnStartTrial" class="primary bigBtn" disabled>Start Trial</button>
           <button id="btnResetAll">Reset everything</button>
         </div>
       </div>
@@ -406,14 +647,7 @@
         <span class="pill">Mode: Manual</span>
         <span class="pill">Participant: <b id="participantId_trial">1</b></span>
         <span class="pill">Set: <b id="setLabel_trial">A</b></span>
-        <span class="pill">Trial timer: <b id="trialTimer">0.00</b> s</span>
-        <span class="pill">Item timer: <b id="itemTimer">0.00</b> s</span>
         <span class="currentItemPill">Current item: <b>Item <span id="currentItemNumber">1</span></b> &nbsp;|&nbsp; Progress: <b><span id="progressText">0</span>/10</b></span>
-      </div>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="btnStartItem" class="primary">Start Item</button>
-        <button id="btnAbort">Abort</button>
       </div>
     </div>
 
@@ -436,8 +670,12 @@
     </div>
 
     <div class="fsBottom">
-      <div class="pill" id="hint">Click “Start Item” to begin timing, then click a bin.</div>
-      <button id="btnNextItem" class="primary" disabled>Next Item</button>
+      <div class="pill" id="hint">Press “Start Item”, then click a bin, then press “Next Item”.</div>
+      <div class="trialButtons">
+        <button id="btnStartItem" class="primary bigBtn">Start Item</button>
+        <button id="btnNextItem" class="primary bigBtn" disabled>Next Item</button>
+        <button id="btnAbort" class="bigBtn">Abort</button>
+      </div>
     </div>
   </div>
 
@@ -459,50 +697,94 @@
       </p>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="btnDownloadCsv" class="primary">Download CSV</button>
+        <button id="btnDownloadCsv" class="primary bigBtn">Download CSV</button>
         <button id="btnNewParticipant">New participant</button>
       </div>
 
-      <p style="margin-top:10px;">CSV includes: chosen bin, ground truth, correct (1/0), item time, total time.</p>
+      <p style="margin-top:10px;">CSV includes: chosen bin, garment type, ground truth, correct (1/0), item time, total time, and total correct out of 10.</p>
     </div>
   </div>
 
   <script>
-    // -----------------------------
-    // Same 40 items / same GTs as guided (EDIT LATER)
-    // -----------------------------
-    function makeItem(i, gtContam, gtDisrupt, tags=[]) {
+    function makeItem(i, gtContam, gtDisrupt, garmentType) {
       const gtSorting = !!(gtContam || gtDisrupt);
-      const gtReason = gtContam && gtDisrupt ? "BOTH" : gtContam ? "CONTAMINATION" : gtDisrupt ? "DISRUPTOR" : "CLEAR";
-      return { item_id: i, tags, gt_contamination: !!gtContam, gt_disruptor: !!gtDisrupt, gt_sorting: gtSorting, gt_reason: gtReason };
+      const gtReason =
+        gtContam && gtDisrupt ? "BOTH" :
+        gtContam ? "CONTAMINATION" :
+        gtDisrupt ? "DISRUPTOR" :
+        "CLEAR";
+
+      return {
+        item_id: i,
+        garment_type: garmentType,
+        gt_contamination: !!gtContam,
+        gt_disruptor: !!gtDisrupt,
+        gt_sorting: gtSorting,
+        gt_reason: gtReason
+      };
     }
 
     const ITEMS = new Map([
-      makeItem(1,true,false,["stain"]), makeItem(2,false,false,["clear"]), makeItem(3,false,true,["metal_zip"]),
-      makeItem(4,true,true,["wet","metal"]), makeItem(5,false,false,["clear"]), makeItem(6,true,false,["food"]),
-      makeItem(7,false,true,["studs"]), makeItem(8,false,false,["clear"]), makeItem(9,true,false,["oil"]),
-      makeItem(10,false,true,["zip"]), makeItem(11,false,false,["clear"]), makeItem(12,true,false,["mud"]),
-      makeItem(13,false,true,["buttons"]), makeItem(14,false,false,["clear"]), makeItem(15,true,false,["paint"]),
-      makeItem(16,false,false,["clear"]), makeItem(17,false,true,["hardware"]), makeItem(18,false,false,["clear"]),
-      makeItem(19,true,true,["wet","electronics_sim"]), makeItem(20,false,false,["clear"]), makeItem(21,false,true,["metal"]),
-      makeItem(22,true,false,["unknown_stain"]), makeItem(23,false,false,["clear"]), makeItem(24,false,true,["zip"]),
-      makeItem(25,true,false,["odour_sim"]), makeItem(26,false,false,["clear"]), makeItem(27,false,true,["rivets"]),
-      makeItem(28,false,false,["clear"]), makeItem(29,true,false,["wet"]), makeItem(30,false,true,["metal_zip"]),
-      makeItem(31,false,false,["clear"]), makeItem(32,true,true,["wet","metal"]), makeItem(33,false,false,["clear"]),
-      makeItem(34,false,true,["studs"]), makeItem(35,true,false,["food"]), makeItem(36,false,false,["clear"]),
-      makeItem(37,false,true,["buttons"]), makeItem(38,true,false,["oil"]), makeItem(39,false,false,["clear"]),
-      makeItem(40,true,true,["electronics_sim","wet"])
+      // Set A
+      makeItem(1, true,  false, "T-shirt"),
+      makeItem(2, false, false, "Trousers"),
+      makeItem(3, false, true,  "Hoodie"),
+      makeItem(4, true,  true,  "Sweatshirt"),
+      makeItem(5, false, false, "Baby item"),
+      makeItem(6, true,  false, "Jacket"),
+      makeItem(7, false, true,  "T-shirt"),
+      makeItem(8, false, false, "Dress"),
+      makeItem(9, true,  false, "Shirt"),
+      makeItem(10,false, true,  "Trousers"),
+
+      // Set B
+      makeItem(11,false, false, "Skirt"),
+      makeItem(12,true,  false, "T-shirt"),
+      makeItem(13,false, true,  "Jacket"),
+      makeItem(14,false, false, "Shorts"),
+      makeItem(15,true,  false, "Sweatshirt"),
+      makeItem(16,false, false, "Pyjamas"),
+      makeItem(17,false, true,  "Hoodie"),
+      makeItem(18,false, false, "Baby item"),
+      makeItem(19,true,  true,  "Trousers"),
+      makeItem(20,false, false, "Shirt"),
+
+      // Set C
+      makeItem(21,false, true,  "Dress"),
+      makeItem(22,true,  false, "T-shirt"),
+      makeItem(23,false, false, "Leggings"),
+      makeItem(24,false, true,  "Jacket"),
+      makeItem(25,true,  false, "Skirt"),
+      makeItem(26,false, false, "Trousers"),
+      makeItem(27,false, true,  "Hoodie"),
+      makeItem(28,false, false, "Shirt"),
+      makeItem(29,true,  false, "Baby item"),
+      makeItem(30,false, true,  "Sweatshirt"),
+
+      // Set D
+      makeItem(31,false, false, "T-shirt"),
+      makeItem(32,true,  true,  "Jacket"),
+      makeItem(33,false, false, "Pyjamas"),
+      makeItem(34,false, true,  "Trousers"),
+      makeItem(35,true,  false, "Dress"),
+      makeItem(36,false, false, "Shorts"),
+      makeItem(37,false, true,  "Shirt"),
+      makeItem(38,true,  false, "Skirt"),
+      makeItem(39,false, false, "Baby item"),
+      makeItem(40,true,  true,  "Hoodie")
     ].map(x => [x.item_id, x]));
 
-    // Participant numbering (auto)
     const PID_KEY = "triage_pid_counter_manual";
+
     function getPid() {
       const v = Number(localStorage.getItem(PID_KEY) || "1");
       return Number.isFinite(v) && v >= 1 ? v : 1;
     }
-    function setPid(v) { localStorage.setItem(PID_KEY, String(v)); }
 
-    // Sets
+    function setPid(v) {
+      localStorage.setItem(PID_KEY, String(v));
+    }
+
     const SETS = {
       A: { label: "A", min: 1,  max: 10 },
       B: { label: "B", min: 11, max: 20 },
@@ -519,12 +801,9 @@
       itemStartPerf: 0,
       currentItem: 1,
       chosenDecision: null,
-      rows: [],
-      trialTimerRAF: null,
-      itemTimerRAF: null
+      rows: []
     };
 
-    // Elements (setup)
     const participantId_setup = document.getElementById("participantId_setup");
     const setLabel_setup = document.getElementById("setLabel_setup");
     const setSelect = document.getElementById("setSelect");
@@ -533,12 +812,9 @@
     const btnResetAll = document.getElementById("btnResetAll");
     const setupWrap = document.getElementById("setupWrap");
 
-    // Trial fullscreen
     const trialFull = document.getElementById("trialFull");
     const participantId_trial = document.getElementById("participantId_trial");
     const setLabel_trial = document.getElementById("setLabel_trial");
-    const trialTimerEl = document.getElementById("trialTimer");
-    const itemTimerEl = document.getElementById("itemTimer");
     const currentItemNumberEl = document.getElementById("currentItemNumber");
     const progressText = document.getElementById("progressText");
     const btnStartItem = document.getElementById("btnStartItem");
@@ -548,7 +824,6 @@
     const btnNextItem = document.getElementById("btnNextItem");
     const hint = document.getElementById("hint");
 
-    // Finish
     const finishWrap = document.getElementById("finishWrap");
     const finishPid = document.getElementById("finishPid");
     const finishPid2 = document.getElementById("finishPid2");
@@ -557,66 +832,47 @@
     const btnDownloadCsv = document.getElementById("btnDownloadCsv");
     const btnNewParticipant = document.getElementById("btnNewParticipant");
 
-    function renderSetupHeader(){
+    function renderSetupHeader() {
       participantId_setup.textContent = state.pid;
       setLabel_setup.textContent = state.setId;
     }
-    function renderTrialHeader(){
+
+    function renderTrialHeader() {
       participantId_trial.textContent = state.pid;
       setLabel_trial.textContent = state.setId;
     }
-    function renderCurrentItem(){
+
+    function renderCurrentItem() {
       currentItemNumberEl.textContent = String(state.currentItem);
       progressText.textContent = String(state.rows.length);
     }
 
-    function setBinsEnabled(enabled){
+    function setBinsEnabled(enabled) {
       binSorting.classList.toggle("disabled", !enabled);
       binNoSorting.classList.toggle("disabled", !enabled);
     }
-    function clearSelection(){
+
+    function clearSelection() {
       binSorting.classList.remove("selected");
       binNoSorting.classList.remove("selected");
       state.chosenDecision = null;
       btnNextItem.disabled = true;
     }
-    function setHint(msg){ hint.textContent = msg; }
 
-    // Timers
-    function startTrialTimer() {
-      const tick = () => {
-        if (!state.trialStarted) return;
-        const s = (performance.now() - state.trialStartPerf) / 1000;
-        trialTimerEl.textContent = s.toFixed(2);
-        state.trialTimerRAF = requestAnimationFrame(tick);
-      };
-      state.trialTimerRAF = requestAnimationFrame(tick);
+    function setHint(msg) {
+      hint.textContent = msg;
     }
-    function startItemTimer() {
-      const tick = () => {
-        if (!state.itemRunning) return;
-        const s = (performance.now() - state.itemStartPerf) / 1000;
-        itemTimerEl.textContent = s.toFixed(2);
-        state.itemTimerRAF = requestAnimationFrame(tick);
-      };
-      state.itemTimerRAF = requestAnimationFrame(tick);
-    }
+
     function stopItemTimerAndGetSeconds() {
       state.itemRunning = false;
-      if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
-      const s = (performance.now() - state.itemStartPerf) / 1000;
-      itemTimerEl.textContent = s.toFixed(2);
-      return s;
-    }
-    function stopTrialTimerAndGetSeconds() {
-      state.trialStarted = false;
-      if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
-      const s = (performance.now() - state.trialStartPerf) / 1000;
-      trialTimerEl.textContent = s.toFixed(2);
-      return s;
+      return (performance.now() - state.itemStartPerf) / 1000;
     }
 
-    // CSV
+    function stopTrialTimerAndGetSeconds() {
+      state.trialStarted = false;
+      return (performance.now() - state.trialStartPerf) / 1000;
+    }
+
     function toCsv(rows) {
       const headers = [
         "timestamp_iso",
@@ -624,6 +880,7 @@
         "set_id",
         "trial_index",
         "item_number",
+        "garment_type",
         "choice",
         "gt_decision",
         "gt_contamination",
@@ -633,15 +890,45 @@
         "item_seconds",
         "trial_seconds_total"
       ];
+
       const escape = (v) => {
         const s = String(v ?? "");
-        if (s.includes('"') || s.includes(",") || s.includes("\n")) return '"' + s.replaceAll('"', '""') + '"';
+        if (s.includes('"') || s.includes(",") || s.includes("\n")) {
+          return '"' + s.replaceAll('"', '""') + '"';
+        }
         return s;
       };
+
       const lines = [headers.join(",")];
-      for (const r of rows) lines.push(headers.map(h => escape(r[h])).join(","));
+
+      for (const r of rows) {
+        lines.push(headers.map(h => escape(r[h])).join(","));
+      }
+
+      const totalCorrect = rows.reduce((sum, r) => sum + Number(r.correct || 0), 0);
+
+      const summaryRow = {
+        timestamp_iso: "",
+        participant_id: rows[0]?.participant_id ?? "",
+        set_id: rows[0]?.set_id ?? "",
+        trial_index: "TOTAL",
+        item_number: "",
+        garment_type: "",
+        choice: "",
+        gt_decision: "",
+        gt_contamination: "",
+        gt_disruptor: "",
+        gt_reason: "",
+        correct: `${totalCorrect}/10`,
+        item_seconds: "",
+        trial_seconds_total: rows[0]?.trial_seconds_total ?? ""
+      };
+
+      lines.push(headers.map(h => escape(summaryRow[h])).join(","));
+
       return lines.join("\n");
     }
+
     function downloadCsv(filename, csvText) {
       const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -654,10 +941,10 @@
       URL.revokeObjectURL(url);
     }
 
-    // Setup logic
     confirmRead.addEventListener("change", () => {
       btnStartTrial.disabled = !confirmRead.checked;
     });
+
     setSelect.addEventListener("change", () => {
       state.setId = setSelect.value;
       renderSetupHeader();
@@ -665,6 +952,7 @@
 
     btnResetAll.addEventListener("click", () => {
       if (!confirm("Reset participant counter and clear current trial state?")) return;
+
       setPid(1);
       state.pid = 1;
       state.setId = "A";
@@ -681,48 +969,42 @@
       state.currentItem = set.min;
       state.rows = [];
 
-      // start trial timer
       state.trialStarted = true;
       state.trialStartPerf = performance.now();
-      trialTimerEl.textContent = "0.00";
-      itemTimerEl.textContent = "0.00";
 
-      // switch screens
       setupWrap.classList.add("hidden");
       finishWrap.classList.add("hidden");
       trialFull.classList.remove("hidden");
 
-      // reset trial UI
       renderTrialHeader();
       renderCurrentItem();
       clearSelection();
       setBinsEnabled(false);
       btnStartItem.disabled = false;
       btnNextItem.disabled = true;
-      setHint("Click “Start Item” to begin timing, then click a bin.");
-
-      startTrialTimer();
+      setHint('Press “Start Item”, then click a bin, then press “Next Item”.');
     });
 
-    function pickChoice(choice){
+    function pickChoice(choice) {
       if (binSorting.classList.contains("disabled")) return;
+
       state.chosenDecision = choice;
       binSorting.classList.toggle("selected", choice === "SORTING");
       binNoSorting.classList.toggle("selected", choice === "NO_SORTING");
       btnNextItem.disabled = false;
     }
+
     binSorting.addEventListener("click", () => pickChoice("SORTING"));
     binNoSorting.addEventListener("click", () => pickChoice("NO_SORTING"));
 
     btnStartItem.addEventListener("click", () => {
       state.itemRunning = true;
       state.itemStartPerf = performance.now();
-      startItemTimer();
 
       btnStartItem.disabled = true;
       setBinsEnabled(true);
       clearSelection();
-      setHint("Click the correct bin now.");
+      setHint("Click the correct bin now, then press “Next Item”.");
     });
 
     btnNextItem.addEventListener("click", () => {
@@ -741,6 +1023,7 @@
         set_id: state.setId,
         trial_index: trialIndex,
         item_number: itemNo,
+        garment_type: gt.garment_type,
         choice: choice,
         gt_decision: gtDecision,
         gt_contamination: gt.gt_contamination ? "YES" : "NO",
@@ -751,16 +1034,13 @@
         trial_seconds_total: ""
       });
 
-      // advance item
       state.currentItem += 1;
       renderCurrentItem();
 
-      // finish after 10
       if (state.rows.length >= 10) {
         const total = stopTrialTimerAndGetSeconds();
         state.rows = state.rows.map(r => ({ ...r, trial_seconds_total: total.toFixed(4) }));
 
-        // show finish screen
         trialFull.classList.add("hidden");
         finishWrap.classList.remove("hidden");
         finishPid.textContent = state.pid;
@@ -770,30 +1050,23 @@
         return;
       }
 
-      // reset for next item
       btnStartItem.disabled = false;
       setBinsEnabled(false);
       clearSelection();
       btnNextItem.disabled = true;
-      setHint("Next item: click “Start Item”, then click a bin.");
+      setHint('Next item: press “Start Item”, then click a bin, then press “Next Item”.');
     });
 
     btnAbort.addEventListener("click", () => {
       if (!confirm("Abort this trial?")) return;
-      // stop timers
-      if (state.itemRunning) {
-        state.itemRunning = false;
-        if (state.itemTimerRAF) cancelAnimationFrame(state.itemTimerRAF);
-      }
-      if (state.trialStarted) {
-        state.trialStarted = false;
-        if (state.trialTimerRAF) cancelAnimationFrame(state.trialTimerRAF);
-      }
-      // go back to setup
+
+      state.itemRunning = false;
+      state.trialStarted = false;
+
       trialFull.classList.add("hidden");
       finishWrap.classList.add("hidden");
       setupWrap.classList.remove("hidden");
-      setHint("Click “Start Item” to begin timing, then click a bin.");
+      setHint('Press “Start Item”, then click a bin, then press “Next Item”.');
     });
 
     btnDownloadCsv.addEventListener("click", () => {
@@ -807,18 +1080,15 @@
       state.pid = next;
       setPid(next);
 
-      // reset checkbox + button
       confirmRead.checked = false;
       btnStartTrial.disabled = true;
 
-      // back to setup
       finishWrap.classList.add("hidden");
       trialFull.classList.add("hidden");
       setupWrap.classList.remove("hidden");
       renderSetupHeader();
     });
 
-    // Init
     state.pid = getPid();
     renderSetupHeader();
   </script>
