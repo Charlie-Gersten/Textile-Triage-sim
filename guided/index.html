@@ -5,524 +5,577 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Guided Sorting</title>
   <style>
-  :root{
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    --bg:#f6f6f6;
-    --text:#111111;
-    --muted:#666666;
-    --border:#dcdcdc;
-    --shadow:0 2px 14px rgba(0,0,0,.05);
+    :root{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --bg:#f6f6f6;
+      --text:#111111;
+      --muted:#666666;
+      --border:#dcdcdc;
+      --shadow:0 2px 14px rgba(0,0,0,.05);
 
-    --panel-bg:#d4e0ee;
-    --panel-top:#bccddd;
-    --panel-footer:#ccd9e6;
+      --panel-bg:#d4e0ee;
+      --panel-top:#bccddd;
+      --panel-footer:#ccd9e6;
 
-    --route-sort:#f3e1e1;
-    --route-clear:#dcecf8;
+      --route-sort:#f3e1e1;
+      --route-clear:#dcecf8;
 
-    --button-dark:#111111;
-    --button-border:#bbbbbb;
+      --button-dark:#111111;
+      --button-border:#bbbbbb;
 
-    --yes-bg:#d9f1df;
-    --yes-border:#2d8a49;
+      --yes-bg:#d9f1df;
+      --yes-border:#2d8a49;
 
-    --no-bg:#ececec;
-    --no-border:#777777;
+      --no-bg:#ececec;
+      --no-border:#777777;
 
-    --selected-shadow:0 0 0 5px rgba(17,17,17,.12);
-  }
-
-  *{ box-sizing:border-box; }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-  }
-
-  .wrap{
-    width:100%;
-    max-width:none;
-    margin:0;
-    padding:6px;
-  }
-
-  .topbar{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:12px;
-  }
-
-  .topbar-left,
-  .topbar-right{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    align-items:center;
-  }
-
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    padding:10px 16px;
-    border-radius:999px;
-    background:#efefef;
-    font-size:13px;
-    line-height:1;
-    white-space:nowrap;
-  }
-
-  .btn{
-    font:inherit;
-    border-radius:16px;
-    border:1px solid var(--button-border);
-    background:#fff;
-    color:#111;
-    cursor:pointer;
-    padding:10px 18px;
-    transition:transform .08s ease, box-shadow .15s ease;
-    font-weight:700;
-  }
-
-  .btn:hover:not(:disabled){
-    transform:translateY(-1px);
-    box-shadow:0 4px 10px rgba(0,0,0,.08);
-  }
-
-  .btn:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    transform:none;
-    box-shadow:none;
-  }
-
-  .btn.primary{
-    background:var(--button-dark);
-    color:#fff;
-    border-color:var(--button-dark);
-  }
-
-  .btn.controlBtn{
-    padding:14px 26px;
-    font-size:21px;
-    font-weight:900;
-    min-width:170px;
-    border-radius:20px;
-  }
-
-  .introCard,
-  .finishCard{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:22px;
-    padding:18px;
-    box-shadow:var(--shadow);
-  }
-
-  .introCard h1,
-  .introCard h2,
-  .finishCard h2{
-    margin:0 0 10px;
-  }
-
-  .introCard p{
-    color:var(--muted);
-    line-height:1.45;
-  }
-
-  .definitions{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:14px;
-  }
-
-  .defRow{
-  display:grid;
-  grid-template-columns: 1fr 300px;
-  gap: 14px;
-  align-items: stretch;
-  margin-top: 10px;
-}
-
-@media (max-width: 980px){
-  .defRow{
-    grid-template-columns: 1fr;
-  }
-}
-
-.defCard{
-  border:1px solid var(--border);
-  background:#fafafa;
-  border-radius:14px;
-  padding:12px 14px;
-}
-
-.defCard h2{
-  font-size:18px;
-  margin:0 0 8px;
-}
-
-.defCard p{
-  margin:0 0 8px;
-}
-
-.defCard ul{
-  margin:6px 0 0 20px;
-}
-
-.defArt{
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:14px;
-  padding:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:160px;
-}
-
-.realImageRow{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:10px;
-  width:100%;
-}
-
-.realImageCard{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-}
-
-.realImageCard img{
-  width:100%;
-  height:110px;
-  object-fit:cover;
-  border-radius:12px;
-  border:1px solid #d8d8d8;
-  background:#fff;
-}
-
-.realImageCard span{
-  font-size:12px;
-  color:#555;
-  text-align:center;
-  font-weight:600;
-}
-
-.realImageSingle{
-  width:100%;
-  display:flex;
-  justify-content:center;
-}
-
-.realImageSingle img{
-  width:100%;
-  max-width:260px;
-  height:180px;
-  object-fit:cover;
-  border-radius:12px;
-  border:1px solid #d8d8d8;
-  background:#fff;
-}
-
-  .checkline{
-    display:flex;
-    gap:10px;
-    align-items:flex-start;
-    margin-top:12px;
-    padding:12px;
-    background:#fafafa;
-    border:1px solid var(--border);
-    border-radius:14px;
-  }
-
-  .row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    margin-top:12px;
-  }
-
-  @media (max-width: 980px){
-    .row{
-      grid-template-columns:1fr;
+      --selected-shadow:0 0 0 5px rgba(17,17,17,.12);
     }
-  }
 
-  .field label{
-    display:block;
-    font-size:13px;
-    color:var(--muted);
-    margin-bottom:6px;
-  }
+    *{ box-sizing:border-box; }
 
-  select{
-    width:100%;
-    padding:12px 14px;
-    border-radius:14px;
-    border:1px solid #cccccc;
-    background:#fff;
-    font:inherit;
-  }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+    }
 
-  .controls{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:14px;
-  }
+    .wrap{
+      width:100%;
+      max-width:none;
+      margin:0;
+      padding:6px;
+    }
 
-  .trialPanel{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-    align-items:stretch;
-  }
+    .topbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:12px;
+    }
 
-  @media (max-width: 1100px){
-    .trialPanel{
-      grid-template-columns:1fr;
+    .topbar-left{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:10px 16px;
+      border-radius:999px;
+      background:#efefef;
+      font-size:13px;
+      line-height:1;
+      white-space:nowrap;
+    }
+
+    .btn{
+      font:inherit;
+      border-radius:16px;
+      border:1px solid var(--button-border);
+      background:#fff;
+      color:#111;
+      cursor:pointer;
+      padding:10px 18px;
+      transition:transform .08s ease, box-shadow .15s ease;
+      font-weight:700;
+    }
+
+    .btn:hover:not(:disabled){
+      transform:translateY(-1px);
+      box-shadow:0 4px 10px rgba(0,0,0,.08);
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .btn.primary{
+      background:var(--button-dark);
+      color:#fff;
+      border-color:var(--button-dark);
+    }
+
+    .btn.controlBtn{
+      padding:14px 26px;
+      font-size:20px;
+      font-weight:900;
+      min-width:165px;
+      border-radius:20px;
+    }
+
+    .btn.mainBtn{
+      padding:12px 20px;
+      font-size:18px;
+      font-weight:800;
+      min-width:145px;
+      border-radius:18px;
+    }
+
+    .introCard,
+    .finishCard{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .introCard h1,
+    .introCard h2,
+    .finishCard h2{
+      margin:0 0 10px;
+    }
+
+    .introCard p{
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .definitions{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .defRow{
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) 430px;
+      gap:14px;
+      align-items:stretch;
+      margin-top:10px;
+    }
+
+    @media (max-width: 980px){
+      .defRow{
+        grid-template-columns:1fr;
       }
-  }
+    }
 
-  .questionPanel{
-    min-height:560px;
-    border-radius:34px;
-    overflow:hidden;
-    border:1px solid #b8cad9;
-    display:flex;
-    flex-direction:column;
-    position:relative;
-    background:var(--panel-bg);
-  }
+    .defCard{
+      border:1px solid var(--border);
+      background:#fafafa;
+      border-radius:14px;
+      padding:12px 14px;
+      max-width:920px;
+    }
 
-  .panelTop{
-    height:88px;
-    position:relative;
-    flex:0 0 auto;
-    background:var(--panel-top);
-  }
+    .defCard h2{
+      font-size:18px;
+      margin:0 0 8px;
+    }
 
-  .slot{
-    width:70%;
-    height:16px;
-    border-radius:999px;
-    background:rgba(88,103,120,.22);
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-  }
+    .defCard p{
+      margin:0 0 8px;
+    }
 
-  .panelMain{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:28px 22px;
-    gap:22px;
-  }
+    .defCard ul{
+      margin:6px 0 0 20px;
+    }
 
-  .questionTitle{
-    width:min(82%, 760px);
-    background:rgba(255,255,255,.8);
-    border-radius:24px;
-    padding:26px 24px;
-    text-align:center;
-    color:#4a4f57;
-    font-size:40px;
-    font-weight:950;
-    line-height:1.04;
-    letter-spacing:.4px;
-  }
+    .defArt{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:220px;
+    }
 
-  .answerBtns{
-    display:flex;
-    gap:16px;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
+    .realImageRow{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      width:100%;
+    }
 
-  .answerBtns button{
-    min-width:170px;
-    padding:16px 22px;
-    border-radius:18px;
-    border:2px solid #bdbdbd;
-    background:#fff;
-    font-size:20px;
-    font-weight:900;
-    cursor:pointer;
-    transition:transform .08s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
-  }
+    .realImageCard{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+    }
 
-  .answerBtns button:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-  }
+    .realImageCard img{
+      width:100%;
+      height:170px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #d8d8d8;
+      background:#fff;
+    }
 
-  .answerBtns button.selected{
-    transform:translateY(-1px) scale(1.03);
-    box-shadow:var(--selected-shadow);
-  }
+    .realImageCard span{
+      font-size:13px;
+      color:#555;
+      text-align:center;
+      font-weight:700;
+    }
 
-  .answerBtns .yes{
-    border-color:var(--yes-border);
-  }
+    .realImageDouble{
+      width:100%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      align-items:center;
+    }
 
-  .answerBtns .no{
-    border-color:var(--no-border);
-  }
+    .realImageDouble img{
+      width:100%;
+      height:230px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #d8d8d8;
+      background:#fff;
+    }
 
-  .answerBtns .yes.selected{
-    background:var(--yes-bg);
-    border-color:var(--yes-border);
-    color:#114d24;
-  }
+    .instructionBox{
+      margin-top:12px;
+      border:1px solid var(--border);
+      background:#fafafa;
+      border-radius:14px;
+      padding:14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:16px;
+      align-items:center;
+    }
 
-  .answerBtns .no.selected{
-    background:var(--no-bg);
-    border-color:#555555;
-    color:#222222;
-  }
+    @media (max-width: 900px){
+      .instructionBox{
+        grid-template-columns:1fr;
+      }
+    }
 
-  .panelFooter{
-    padding:14px 18px 12px;
-    text-align:center;
-    color:#66707b;
-    font-size:15px;
-    font-weight:700;
-    border-top:1px solid rgba(0,0,0,.04);
-    background:var(--panel-footer);
-  }
+    .instructionText h2{
+      margin:0 0 8px;
+      font-size:18px;
+    }
 
-  .bottomBar{
-    margin-top:14px;
-    background:#efefef;
-    border-radius:18px;
-    padding:12px 14px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px;
-    align-items:center;
-    justify-content:space-between;
-  }
+    .instructionText p{
+      margin:6px 0;
+      color:var(--muted);
+      line-height:1.45;
+    }
 
-  .bottomLeft{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
-    color:#444;
-    font-size:15px;
-    font-weight:600;
-  }
+    .instructionButtonsDemo{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
 
-  .bottomRight{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    flex-wrap:wrap;
-  }
+    .demoBtn{
+      opacity:1 !important;
+      cursor:default !important;
+      pointer-events:none;
+      min-width:170px;
+    }
 
-  .routeIcons{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-  }
+    .checkline{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:12px;
+      padding:12px;
+      background:#fafafa;
+      border:1px solid var(--border);
+      border-radius:14px;
+    }
 
-  .routeCard{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    border-radius:999px;
-    background:#ffffff;
-    border:1px solid var(--border);
-    font-size:13px;
-    color:#555;
-    transition:transform .16s ease, background .16s ease, border-color .16s ease;
-    font-weight:800;
-  }
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-top:12px;
+    }
 
-  .routeCard .icon{
-    font-size:18px;
-    line-height:1;
-  }
+    @media (max-width: 980px){
+      .row{
+        grid-template-columns:1fr;
+      }
+    }
 
-  .routeCard.active-sort{
-    background:var(--route-sort);
-    border-color:#dca5a5;
-  }
+    .field label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
 
-  .routeCard.active-clear{
-    background:var(--route-clear);
-    border-color:#9fc3de;
-  }
+    select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid #cccccc;
+      background:#fff;
+      font:inherit;
+    }
 
-  .shake{
-    animation:shake .28s ease-in-out 1;
-  }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
 
-  @keyframes shake{
-    0%{ transform:translateX(0); }
-    25%{ transform:translateX(-4px); }
-    50%{ transform:translateX(4px); }
-    75%{ transform:translateX(-3px); }
-    100%{ transform:translateX(0); }
-  }
+    .trialPanel{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      align-items:stretch;
+    }
 
-  .hidden{
-    display:none !important;
-  }
+    @media (max-width: 1100px){
+      .trialPanel{
+        grid-template-columns:1fr;
+      }
+    }
 
-  .logWrap{
-    margin-top:16px;
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:18px;
-    overflow:auto;
-    max-height:280px;
-    box-shadow:var(--shadow);
-  }
+    .questionPanel{
+      min-height:560px;
+      border-radius:34px;
+      overflow:hidden;
+      border:1px solid #b8cad9;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      background:var(--panel-bg);
+    }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13px;
-  }
+    .panelTop{
+      height:88px;
+      position:relative;
+      flex:0 0 auto;
+      background:var(--panel-top);
+    }
 
-  th, td{
-    border-bottom:1px solid #eeeeee;
-    padding:9px 7px;
-    text-align:left;
-    vertical-align:top;
-  }
+    .slot{
+      width:70%;
+      height:16px;
+      border-radius:999px;
+      background:rgba(88,103,120,.22);
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+    }
 
-  th{
-    background:#fafafa;
-    position:sticky;
-    top:0;
-    z-index:1;
-  }
+    .panelMain{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:28px 22px;
+      gap:22px;
+    }
 
-  .ok{
-    color:#0a7a2f;
-    font-weight:800;
-  }
+    .questionTitle{
+      width:min(82%, 760px);
+      background:rgba(255,255,255,.8);
+      border-radius:24px;
+      padding:26px 24px;
+      text-align:center;
+      color:#4a4f57;
+      font-size:40px;
+      font-weight:950;
+      line-height:1.04;
+      letter-spacing:.4px;
+    }
 
-  .bad{
-    color:#b00020;
-    font-weight:800;
-  }
-</style>
+    .answerBtns{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .answerBtns button{
+      min-width:170px;
+      padding:16px 22px;
+      border-radius:18px;
+      border:2px solid #bdbdbd;
+      background:#fff;
+      font-size:20px;
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .08s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .answerBtns button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .answerBtns button.selected{
+      transform:translateY(-1px) scale(1.03);
+      box-shadow:var(--selected-shadow);
+    }
+
+    .answerBtns .yes{
+      border-color:var(--yes-border);
+    }
+
+    .answerBtns .no{
+      border-color:var(--no-border);
+    }
+
+    .answerBtns .yes.selected{
+      background:var(--yes-bg);
+      border-color:var(--yes-border);
+      color:#114d24;
+    }
+
+    .answerBtns .no.selected{
+      background:var(--no-bg);
+      border-color:#555555;
+      color:#222222;
+    }
+
+    .panelFooter{
+      padding:14px 18px 12px;
+      text-align:center;
+      color:#66707b;
+      font-size:15px;
+      font-weight:700;
+      border-top:1px solid rgba(0,0,0,.04);
+      background:var(--panel-footer);
+    }
+
+    .bottomBar{
+      margin-top:14px;
+      background:#efefef;
+      border-radius:18px;
+      padding:12px 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .bottomLeft{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      color:#444;
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .bottomRight{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .routeIcons{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .routeCard{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#ffffff;
+      border:1px solid var(--border);
+      font-size:13px;
+      color:#555;
+      transition:transform .16s ease, background .16s ease, border-color .16s ease;
+      font-weight:800;
+    }
+
+    .routeCard .icon{
+      font-size:18px;
+      line-height:1;
+    }
+
+    .routeCard.active-sort{
+      background:var(--route-sort);
+      border-color:#dca5a5;
+    }
+
+    .routeCard.active-clear{
+      background:var(--route-clear);
+      border-color:#9fc3de;
+    }
+
+    .shake{
+      animation:shake .28s ease-in-out 1;
+    }
+
+    @keyframes shake{
+      0%{ transform:translateX(0); }
+      25%{ transform:translateX(-4px); }
+      50%{ transform:translateX(4px); }
+      75%{ transform:translateX(-3px); }
+      100%{ transform:translateX(0); }
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .logWrap{
+      margin-top:16px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:auto;
+      max-height:280px;
+      box-shadow:var(--shadow);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+
+    th, td{
+      border-bottom:1px solid #eeeeee;
+      padding:9px 7px;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{
+      background:#fafafa;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    .ok{
+      color:#0a7a2f;
+      font-weight:800;
+    }
+
+    .bad{
+      color:#b00020;
+      font-weight:800;
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -533,10 +586,6 @@
         <span class="pill">Set: <b id="setLabel">A</b></span>
         <span class="pill">Current item: <b id="currentItemTop">Item 1</b></span>
         <span class="pill">Progress: <b id="progressTop">0</b>/10</span>
-      </div>
-      <div class="topbar-right">
-        <button id="btnStartItemTop" class="btn primary topBtn hidden">Start Item</button>
-        <button id="btnAbortTop" class="btn topBtn hidden" disabled>Abort</button>
       </div>
     </div>
 
@@ -552,56 +601,76 @@
         </p>
 
         <div class="defRow">
-  <div class="defCard">
-    <h2>Disruptors</h2>
-    <p>Any item with <b>buttons</b>, <b>zips</b>, <b>trims</b>, or <b>non-textile attachments</b>.</p>
-    <ul>
-      <li>Buttons, zips</li>
-      <li>Studs, rivets, snaps, eyelets</li>
-      <li>Sequins / embellishment</li>
-      <li>Non-textile attachments (plastic/metal parts)</li>
-    </ul>
-  </div>
+          <div class="defCard">
+            <h2>Disruptors</h2>
+            <p>Any item with <b>buttons</b>, <b>zips</b>, <b>trims</b>, or <b>non-textile attachments</b>.</p>
+            <ul>
+              <li>Buttons, zips</li>
+              <li>Studs, rivets, snaps, eyelets</li>
+              <li>Sequins / embellishment</li>
+              <li>Non-textile attachments (plastic/metal parts)</li>
+            </ul>
+          </div>
 
-  <div class="defArt" aria-label="Real examples of disruptors">
-    <div class="realImageRow">
-      <div class="realImageCard">
-        <img src="button.png" alt="Button example">
-        <span>Button</span>
-      </div>
-      <div class="realImageCard">
-        <img src="zip.png" alt="Zip example">
-        <span>Zip</span>
-      </div>
-      <div class="realImageCard">
-        <img src="eyelet.png" alt="Eyelet example">
-        <span>Eyelet</span>
-      </div>
-    </div>
-  </div>
-</div>
+          <div class="defArt" aria-label="Real examples of disruptors">
+            <div class="realImageRow">
+              <div class="realImageCard">
+                <img src="button.png" alt="Button example">
+                <span>Button</span>
+              </div>
+              <div class="realImageCard">
+                <img src="zip.png" alt="Zip example">
+                <span>Zip</span>
+              </div>
+              <div class="realImageCard">
+                <img src="eyelet.png" alt="Eyelet example">
+                <span>Eyelet</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<div class="defRow">
-  <div class="defCard">
-    <h2>Contamination</h2>
-    <p>Items with <b>moisture</b>, <b>oil</b>, or a <b>large stain</b>. (No harmful substances used.)</p>
-    <ul>
-      <li>Wet/damp fabric</li>
-      <li>Oil / grease marks</li>
-      <li>Large food/soil stain</li>
-    </ul>
-  </div>
+        <div class="defRow">
+          <div class="defCard">
+            <h2>Contamination</h2>
+            <p>Items with <b>moisture</b>, <b>oil</b>, or a <b>large stain</b>. (No harmful substances used.)</p>
+            <ul>
+              <li>Wet/damp fabric</li>
+              <li>Oil / grease marks</li>
+              <li>Large food/soil stain</li>
+            </ul>
+          </div>
 
-  <div class="defArt" aria-label="Real example of contamination">
-    <div class="realImageSingle">
-      <img src="stain.png" alt="Stained garment example">
-    </div>
-  </div>
-</div>
+          <div class="defArt" aria-label="Real examples of contamination">
+            <div class="realImageDouble">
+              <img src="stain-shirt.png" alt="Stained shirt example">
+              <img src="stain-jeans.png" alt="Stained jeans example">
+            </div>
+          </div>
+        </div>
+
+        <div class="instructionBox">
+          <div class="instructionText">
+            <h2>How to move through the trial</h2>
+            <p>
+              Before answering each item, press <b>Start Item</b> to begin that item.
+              After answering both questions, press <b>Next Item</b> to save the response and move on.
+            </p>
+            <p>
+              You must press <b>Start Item</b> for every new item, and then press <b>Next Item</b> to continue to the next one.
+            </p>
+          </div>
+
+          <div class="instructionButtonsDemo" aria-label="Example of start and next item buttons">
+            <button type="button" class="btn primary demoBtn controlBtn" disabled>Start Item</button>
+            <button type="button" class="btn primary demoBtn controlBtn" disabled>Next Item</button>
+          </div>
+        </div>
+
         <div class="checkline">
           <input id="confirmRead" type="checkbox" />
           <div>
-            <b>I have read and understood the definitions above.</b><br/>
+            <b>I have read and understood the definitions and instructions above.</b><br/>
             <span style="color:#666; font-size:13px;">Tick this to begin.</span>
           </div>
         </div>
@@ -625,7 +694,7 @@
       </div>
 
       <div class="controls">
-        <button id="btnStartTrial" class="btn primary nextBtn" disabled>Start Trial</button>
+        <button id="btnStartTrial" class="btn primary mainBtn" disabled>Start Trial</button>
         <button id="btnResetAll" class="btn">Reset everything</button>
       </div>
     </div>
@@ -668,7 +737,7 @@
 
       <div class="bottomBar">
         <div class="bottomLeft">
-          <span id="hintText">Click “Start Item” to begin timing, then answer both questions.</span>
+          <span id="hintText">Press “Start Item”, answer both questions, then press “Next Item”.</span>
           <div class="routeIcons">
             <div id="routeSort" class="routeCard">
               <span class="icon">🟥</span>
@@ -681,8 +750,10 @@
           </div>
         </div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button id="btnNextItem" class="btn primary nextBtn" disabled>Next Item</button>
+        <div class="bottomRight">
+          <button id="btnStartItem" class="btn primary controlBtn">Start Item</button>
+          <button id="btnNextItem" class="btn primary controlBtn" disabled>Next Item</button>
+          <button id="btnAbort" class="btn controlBtn">Abort</button>
         </div>
       </div>
 
@@ -714,7 +785,7 @@
         <b id="finishTime">0.00</b> seconds.
       </p>
       <div class="controls">
-        <button id="btnDownloadCsv" class="btn primary nextBtn">Download CSV</button>
+        <button id="btnDownloadCsv" class="btn primary mainBtn">Download CSV</button>
         <button id="btnNewParticipant" class="btn">New participant</button>
       </div>
     </div>
@@ -850,8 +921,8 @@
     const btnStartTrial = document.getElementById("btnStartTrial");
     const btnResetAll = document.getElementById("btnResetAll");
 
-    const btnStartItemTop = document.getElementById("btnStartItemTop");
-    const btnAbortTop = document.getElementById("btnAbortTop");
+    const btnStartItem = document.getElementById("btnStartItem");
+    const btnAbort = document.getElementById("btnAbort");
     const btnNextItem = document.getElementById("btnNextItem");
 
     const contamYes = document.getElementById("contamYes");
@@ -919,6 +990,7 @@
         state.ans_contam !== null &&
         state.ans_disrupt !== null &&
         state.decision_sorting !== null;
+
       btnNextItem.disabled = !ok;
     }
 
@@ -959,66 +1031,66 @@
     }
 
     function toCsv(rows) {
-  const headers = [
-    "timestamp_iso",
-    "participant_id",
-    "set_id",
-    "trial_index",
-    "item_number",
-    "garment_type",
-    "ans_contamination",
-    "ans_disruptors",
-    "ans_reason_category",
-    "system_decision",
-    "gt_contamination",
-    "gt_disruptor",
-    "gt_reason",
-    "gt_decision",
-    "correct",
-    "item_seconds",
-    "trial_seconds_total"
-  ];
+      const headers = [
+        "timestamp_iso",
+        "participant_id",
+        "set_id",
+        "trial_index",
+        "item_number",
+        "garment_type",
+        "ans_contamination",
+        "ans_disruptors",
+        "ans_reason_category",
+        "system_decision",
+        "gt_contamination",
+        "gt_disruptor",
+        "gt_reason",
+        "gt_decision",
+        "correct",
+        "item_seconds",
+        "trial_seconds_total"
+      ];
 
-  const escape = (v) => {
-    const s = String(v ?? "");
-    if (s.includes('"') || s.includes(",") || s.includes("\n")) {
-      return '"' + s.replaceAll('"', '""') + '"';
+      const escape = (v) => {
+        const s = String(v ?? "");
+        if (s.includes('"') || s.includes(",") || s.includes("\n")) {
+          return '"' + s.replaceAll('"', '""') + '"';
+        }
+        return s;
+      };
+
+      const lines = [headers.join(",")];
+
+      for (const r of rows) {
+        lines.push(headers.map(h => escape(r[h])).join(","));
+      }
+
+      const totalCorrect = rows.reduce((sum, r) => sum + Number(r.correct || 0), 0);
+
+      const summaryRow = {
+        timestamp_iso: "",
+        participant_id: rows[0]?.participant_id ?? "",
+        set_id: rows[0]?.set_id ?? "",
+        trial_index: "TOTAL",
+        item_number: "",
+        garment_type: "",
+        ans_contamination: "",
+        ans_disruptors: "",
+        ans_reason_category: "",
+        system_decision: "",
+        gt_contamination: "",
+        gt_disruptor: "",
+        gt_reason: "",
+        gt_decision: "",
+        correct: `${totalCorrect}/10`,
+        item_seconds: "",
+        trial_seconds_total: rows[0]?.trial_seconds_total ?? ""
+      };
+
+      lines.push(headers.map(h => escape(summaryRow[h])).join(","));
+
+      return lines.join("\n");
     }
-    return s;
-  };
-
-  const lines = [headers.join(",")];
-
-  for (const r of rows) {
-    lines.push(headers.map(h => escape(r[h])).join(","));
-  }
-
-  const totalCorrect = rows.reduce((sum, r) => sum + Number(r.correct || 0), 0);
-
-  const summaryRow = {
-    timestamp_iso: "",
-    participant_id: rows[0]?.participant_id ?? "",
-    set_id: rows[0]?.set_id ?? "",
-    trial_index: "TOTAL",
-    item_number: "",
-    garment_type: "",
-    ans_contamination: "",
-    ans_disruptors: "",
-    ans_reason_category: "",
-    system_decision: "",
-    gt_contamination: "",
-    gt_disruptor: "",
-    gt_reason: "",
-    gt_decision: "",
-    correct: `${totalCorrect}/10`,
-    item_seconds: "",
-    trial_seconds_total: rows[0]?.trial_seconds_total ?? ""
-  };
-
-  lines.push(headers.map(h => escape(summaryRow[h])).join(","));
-
-  return lines.join("\n");
-}
 
     function downloadCsv(filename, csvText) {
       const blob = new Blob([csvText], { type: "text/csv;charset=utf-8" });
@@ -1038,15 +1110,15 @@
       state.decision_sorting = null;
       state.rows = [];
 
-      btnStartItemTop.disabled = false;
-      btnAbortTop.disabled = true;
+      btnStartItem.disabled = false;
+      btnAbort.disabled = false;
       btnNextItem.disabled = true;
 
       enableQuestions(false);
       resetQuestionButtons();
       clearRoutes();
 
-      setHint('Click “Start Item” to begin timing, then answer both questions.');
+      setHint('Press “Start Item”, answer both questions, then press “Next Item”.');
       renderLog();
     }
 
@@ -1059,21 +1131,23 @@
       resetQuestionButtons();
       clearRoutes();
 
+      btnStartItem.disabled = false;
+      btnAbort.disabled = false;
       btnNextItem.disabled = true;
-      btnStartItemTop.disabled = false;
 
-      setHint('Click “Start Item” to begin timing, then answer both questions.');
+      setHint('Press “Start Item”, answer both questions, then press “Next Item”.');
     }
 
     function setStartItemState() {
-      btnStartItemTop.disabled = false;
-      btnAbortTop.disabled = false;
+      btnStartItem.disabled = false;
+      btnAbort.disabled = false;
       btnNextItem.disabled = true;
 
       enableQuestions(false);
       resetQuestionButtons();
       clearRoutes();
-      setHint('Click “Start Item” to begin timing, then answer both questions.');
+
+      setHint('Press “Start Item”, answer both questions, then press “Next Item”.');
     }
 
     confirmRead.addEventListener("change", () => {
@@ -1109,13 +1183,10 @@
       resetForNewTrialUI();
       renderHeader();
       showPanel(trialPanel);
-
-      btnStartItemTop.classList.remove("hidden");
-      btnAbortTop.classList.remove("hidden");
       setStartItemState();
     });
 
-    btnStartItemTop.addEventListener("click", () => {
+    btnStartItem.addEventListener("click", () => {
       state.itemRunning = true;
       state.itemStartPerf = performance.now();
       state.ans_contam = null;
@@ -1126,8 +1197,8 @@
       resetQuestionButtons();
       clearRoutes();
 
-      btnStartItemTop.disabled = true;
-      setHint("Answer both questions for this item.");
+      btnStartItem.disabled = true;
+      setHint("Answer both questions for this item, then press “Next Item”.");
     });
 
     function updateDecisionAndUI() {
@@ -1194,7 +1265,7 @@
 
       const gtDecision = gt.gt_sorting ? "SORTING" : "NO_SORTING";
       const systemDecision = state.decision_sorting ? "SORTING" : "NO_SORTING";
-      const correct = gtDecision === systemDecision ? 1 : 0;
+      const correct = (gtDecision === systemDecision) ? 1 : 0;
 
       const row = {
         timestamp_iso: new Date().toISOString(),
@@ -1233,10 +1304,6 @@
         renderLog();
         finishPid.textContent = state.pid;
         finishTime.textContent = total.toFixed(2);
-
-        btnStartItemTop.classList.add("hidden");
-        btnAbortTop.classList.add("hidden");
-
         showPanel(finishPanel);
         return;
       }
@@ -1244,14 +1311,11 @@
       resetForNextItem();
     });
 
-    btnAbortTop.addEventListener("click", () => {
+    btnAbort.addEventListener("click", () => {
       if (!confirm("Abort this trial?")) return;
 
       state.itemRunning = false;
       state.trialStarted = false;
-
-      btnStartItemTop.classList.add("hidden");
-      btnAbortTop.classList.add("hidden");
 
       resetForNewTrialUI();
       showPanel(setupPanel);
@@ -1270,9 +1334,6 @@
 
       confirmRead.checked = false;
       btnStartTrial.disabled = true;
-
-      btnStartItemTop.classList.add("hidden");
-      btnAbortTop.classList.add("hidden");
 
       renderHeader();
       resetForNewTrialUI();
