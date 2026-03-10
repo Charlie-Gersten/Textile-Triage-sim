@@ -723,55 +723,55 @@
         gt_reason: gtReason
       };
     }
-
+    //makeItem(i, gtContam, gtDisrupt, garmentType)
     const ITEMS = new Map([
       // Set A
       makeItem(1, true,  false, "T-shirt"),
-      makeItem(2, false, false, "Trousers"),
-      makeItem(3, false, true,  "Hoodie"),
-      makeItem(4, true,  true,  "Sweatshirt"),
-      makeItem(5, false, false, "Baby item"),
-      makeItem(6, true,  false, "Jacket"),
-      makeItem(7, false, true,  "T-shirt"),
-      makeItem(8, false, false, "Dress"),
-      makeItem(9, true,  false, "Shirt"),
-      makeItem(10,false, true,  "Trousers"),
+      makeItem(2, true, true, "Baby Item"),
+      makeItem(3, false, true,  "Shirt"),
+      makeItem(4, false,  true,  "Baby Item"),
+      makeItem(5, true, false, "Trousers"),
+      makeItem(6, true,  false, "T-shirt"),
+      makeItem(7, false, true,  "Baby Item"),
+      makeItem(8, false, false, "Scarf"),
+      makeItem(9, false,  false, "Scarf"),
+      makeItem(10,false, false,  "Trousers"),
 
       // Set B
-      makeItem(11,false, false, "Skirt"),
+      makeItem(11,true, false, "Jumper"),
       makeItem(12,true,  false, "T-shirt"),
-      makeItem(13,false, true,  "Jacket"),
-      makeItem(14,false, false, "Shorts"),
-      makeItem(15,true,  false, "Sweatshirt"),
-      makeItem(16,false, false, "Pyjamas"),
-      makeItem(17,false, true,  "Hoodie"),
-      makeItem(18,false, false, "Baby item"),
-      makeItem(19,true,  true,  "Trousers"),
-      makeItem(20,false, false, "Shirt"),
+      makeItem(13,true, true, "Jacket"),
+      makeItem(14,true, false, "Sock"),
+      makeItem(15,false,  true, "Top"),
+      makeItem(16,false, true, "Baby Item"),
+      makeItem(17,false, false,  "Top"),
+      makeItem(18,false, true, "Jacket"),
+      makeItem(19,false,  false,  "T-shirt"),
+      makeItem(20,false, false, "Sock"),
 
       // Set C
-      makeItem(21,false, true,  "Dress"),
-      makeItem(22,true,  false, "T-shirt"),
-      makeItem(23,false, false, "Leggings"),
-      makeItem(24,false, true,  "Jacket"),
-      makeItem(25,true,  false, "Skirt"),
-      makeItem(26,false, false, "Trousers"),
-      makeItem(27,false, true,  "Hoodie"),
-      makeItem(28,false, false, "Shirt"),
-      makeItem(29,true,  false, "Baby item"),
-      makeItem(30,false, true,  "Sweatshirt"),
+      makeItem(21,true, true,  "Jumper"),
+      makeItem(22,false,  true, "Trousers"),
+      makeItem(23,true, false, "T-Shirt"),
+      makeItem(24,false, true,  "Dress"),
+      makeItem(25,false,  true, "Jumper"),
+      makeItem(26,false, false, "T-Shirt"),
+      makeItem(27,true, false,  "Hoodie"),
+      makeItem(28,true, false, "Trousers"),
+      makeItem(29,false,  false, "T-Shirt"),
+      makeItem(30,false, false,  "Trousers"),
 
       // Set D
-      makeItem(31,false, false, "T-shirt"),
-      makeItem(32,true,  true,  "Jacket"),
-      makeItem(33,false, false, "Pyjamas"),
-      makeItem(34,false, true,  "Trousers"),
-      makeItem(35,true,  false, "Dress"),
-      makeItem(36,false, false, "Shorts"),
-      makeItem(37,false, true,  "Shirt"),
-      makeItem(38,true,  false, "Skirt"),
-      makeItem(39,false, false, "Baby item"),
-      makeItem(40,true,  true,  "Hoodie")
+      makeItem(31,true, false, "Dress"),
+      makeItem(32,true,  false,  "Hat"),
+      makeItem(33,false, true, "Jacket"),
+      makeItem(34,false, true,  "Jacket"),
+      makeItem(35,true,  false, "Sock"),
+      makeItem(36,false, false, "Hat"),
+      makeItem(37,false, true,  "Gloves"),
+      makeItem(38,false,  false, "Trousers"),
+      makeItem(39,false, false, "T-shirt"),
+      makeItem(40,true,  true,  "Gloves")
     ].map(x => [x.item_id, x]));
 
     const PID_KEY = "triage_pid_counter_manual";
